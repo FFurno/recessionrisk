@@ -610,7 +610,7 @@
                         minute: '2-digit',
                         timeZoneName: 'short'
                     };
-                    const formattedDate = this.lastModified.toLocaleDateString('en-US', options);
+                    const formattedDate = this.lastModified.toLocaleDateString(undefined, options);
                     lastUpdatedEl.textContent = formattedDate;
                 }
             }
