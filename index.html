@@ -160,7 +160,7 @@
 
         /* Last update styling */
         .last-update-time {
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             color: #0072bd;
             font-weight: 700;
         }
@@ -273,13 +273,21 @@
         }
 
         #time-range-start {
-            background: linear-gradient(to right, #0072bd 0%, #0072bd var(--start-percent), #ddd var(--start-percent), #ddd 100%);
+            background: linear-gradient(to right, 
+                #ddd 0%, 
+                #ddd 0%, 
+                #0072bd 0%, 
+                #0072bd 100%, 
+                #ddd 100%, 
+                #ddd 100%);
+            z-index: 1;
         }
 
         #time-range-end {
             background: transparent;
+            z-index: 2;
         }
-
+        
         .range-display {
             text-align: center;
             margin-top: 35px;
@@ -433,7 +441,210 @@
         </div>
     </div>
 
+
+
     <script>
+ 
+        // Fixed Canvas Event Handler
+        const timeRangeSelector = {
+            id: 'timeRangeSelector',
+            
+            beforeInit(chart) {
+                console.log('🔧 Plugin initialized!');
+                chart.timeSelection = {
+                    isSelecting: false,
+                    startX: null,
+                    endX: null,
+                    eventsAttached: false  // ← Track if events are already attached
+                };
+            },
+            
+            afterInit(chart) {
+                // Only attach events once, after chart is fully initialized
+                if (!chart.timeSelection.eventsAttached) {
+                    this.setupCanvasEvents(chart);
+                    chart.timeSelection.eventsAttached = true;
+                }
+            },
+            
+            setupCanvasEvents(chart) {
+                const canvas = chart.canvas;
+                if (!canvas) {
+                    console.warn('⚠️ Canvas not found');
+                    return;
+                }
+                
+                console.log('🎯 Setting up canvas events');
+                
+                const selection = chart.timeSelection;
+                let isMouseDown = false;
+                
+                // Remove any existing listeners first
+                canvas.removeEventListener('mousedown', canvas._chartMouseDown);
+                canvas.removeEventListener('mousemove', canvas._chartMouseMove);
+                canvas.removeEventListener('mouseup', canvas._chartMouseUp);
+                canvas.removeEventListener('mouseleave', canvas._chartMouseLeave);
+                
+                // Create bound functions so we can remove them later
+                canvas._chartMouseDown = (e) => {
+                    console.log('🖱️ Canvas mousedown detected!');
+                    const rect = canvas.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    
+                    isMouseDown = true;
+                    selection.isSelecting = true;
+                    selection.startX = x;
+                    selection.endX = x;
+                    
+                    console.log('Starting selection at x:', x);
+                    chart.update('none');
+                    e.preventDefault();
+                };
+                
+                canvas._chartMouseMove = (e) => {
+                    if (isMouseDown && selection.isSelecting) {
+                        const rect = canvas.getBoundingClientRect();
+                        const x = e.clientX - rect.left;
+                        
+                        selection.endX = x;
+                        console.log('🚀 Dragging to x:', x);
+                        chart.update('none');
+                        e.preventDefault();
+                    }
+                };
+                
+                canvas._chartMouseUp = (e) => {
+                    if (isMouseDown && selection.isSelecting) {
+                        console.log('🏁 Selection complete!');
+                        isMouseDown = false;
+                        selection.isSelecting = false;
+                        
+                        this.applySelection(chart);
+                        e.preventDefault();
+                    }
+                };
+                
+                canvas._chartMouseLeave = (e) => {
+                    if (isMouseDown) {
+                        console.log('🚪 Mouse left canvas - ending selection');
+                        isMouseDown = false;
+                        selection.isSelecting = false;
+                        selection.startX = null;
+                        selection.endX = null;
+                        chart.update('none');
+                    }
+                };
+                
+                // Add the event listeners
+                canvas.addEventListener('mousedown', canvas._chartMouseDown);
+                canvas.addEventListener('mousemove', canvas._chartMouseMove);
+                canvas.addEventListener('mouseup', canvas._chartMouseUp);
+                canvas.addEventListener('mouseleave', canvas._chartMouseLeave);
+            },
+            
+            getDataIndexFromX(chart, x) {
+                const xScale = chart.scales.x;
+                if (!xScale) return null;
+                
+                const chartLeft = xScale.left;
+                const chartRight = xScale.right;
+                
+                if (x < chartLeft || x > chartRight) return null;
+                
+                const relativeX = (x - chartLeft) / (chartRight - chartLeft);
+                const filteredData = chart.config._config.filteredData || [];
+                
+                const dataIndex = Math.round(relativeX * (filteredData.length - 1));
+                return Math.max(0, Math.min(dataIndex, filteredData.length - 1));
+            },
+            
+            applySelection(chart) {
+                const selection = chart.timeSelection;
+                if (selection.startX !== null && selection.endX !== null) {
+                    const startIndex = this.getDataIndexFromX(chart, selection.startX);
+                    const endIndex = this.getDataIndexFromX(chart, selection.endX);
+                    
+                    console.log('📊 Relative indices in current view:', startIndex, 'to', endIndex);
+                    
+                    if (startIndex !== null && endIndex !== null && startIndex !== endIndex) {
+                        const startIdx = Math.min(startIndex, endIndex);
+                        const endIdx = Math.max(startIndex, endIndex);
+                        
+                        // Get current slider positions (these represent absolute indices in full dataset)
+                        const currentStartIndex = parseInt(document.getElementById('time-range-start').value);
+                        const currentEndIndex = parseInt(document.getElementById('time-range-end').value);
+                        
+                        // Calculate how the selection maps to the current visible range
+                        const currentRangeSize = currentEndIndex - currentStartIndex;
+                        const selectionStartRatio = startIdx / (chart.config._config.filteredData.length - 1);
+                        const selectionEndRatio = endIdx / (chart.config._config.filteredData.length - 1);
+                        
+                        // Map to absolute indices
+                        const absoluteStartIdx = currentStartIndex + Math.round(selectionStartRatio * currentRangeSize);
+                        const absoluteEndIdx = currentStartIndex + Math.round(selectionEndRatio * currentRangeSize);
+                        
+                        console.log('🎯 Current range:', currentStartIndex, 'to', currentEndIndex);
+                        console.log('🎯 New absolute range:', absoluteStartIdx, 'to', absoluteEndIdx);
+                        
+                        // Ensure valid range
+                        const maxIndex = parseInt(document.getElementById('time-range-end').max);
+                        const finalStartIdx = Math.max(0, Math.min(absoluteStartIdx, maxIndex - 1));
+                        const finalEndIdx = Math.max(finalStartIdx + 1, Math.min(absoluteEndIdx, maxIndex));
+                        
+                        console.log('🎯 Final range:', finalStartIdx, 'to', finalEndIdx);
+                        
+                        // Update sliders
+                        document.getElementById('time-range-start').value = finalStartIdx;
+                        document.getElementById('time-range-end').value = finalEndIdx;
+                        
+                        // Update the visualization
+                        const visualizer = chart.config._config.visualizer;
+                        if (visualizer) {
+                            visualizer.updateRangeLabels();
+                            visualizer.updateChart();
+                        }
+                    }
+                }
+                
+                selection.startX = null;
+                selection.endX = null;
+            },
+            
+            beforeDestroy(chart) {
+                // Clean up event listeners when chart is destroyed
+                const canvas = chart.canvas;
+                if (canvas && chart.timeSelection.eventsAttached) {
+                    canvas.removeEventListener('mousedown', canvas._chartMouseDown);
+                    canvas.removeEventListener('mousemove', canvas._chartMouseMove);
+                    canvas.removeEventListener('mouseup', canvas._chartMouseUp);
+                    canvas.removeEventListener('mouseleave', canvas._chartMouseLeave);
+                    chart.timeSelection.eventsAttached = false;
+                }
+            },
+            
+            afterDraw(chart) {
+                const selection = chart.timeSelection;
+                if (selection.isSelecting && selection.startX !== null && selection.endX !== null) {
+                    const ctx = chart.ctx;
+                    const chartArea = chart.chartArea;
+                    
+                    const startX = Math.min(selection.startX, selection.endX);
+                    const endX = Math.max(selection.startX, selection.endX);
+                    
+                    if (Math.abs(endX - startX) > 2) {
+                        ctx.save();
+                        ctx.fillStyle = 'rgba(0, 114, 189, 0.2)';
+                        ctx.fillRect(startX, chartArea.top, endX - startX, chartArea.bottom - chartArea.top);
+                        
+                        ctx.strokeStyle = 'rgba(0, 114, 189, 0.8)';
+                        ctx.lineWidth = 2;
+                        ctx.strokeRect(startX, chartArea.top, endX - startX, chartArea.bottom - chartArea.top);
+                        ctx.restore();
+                    }
+                }
+            }
+        };
+
         class RecessionRiskVisualizer {
             constructor() {
                 this.data = null;
@@ -610,7 +821,7 @@
                         minute: '2-digit',
                         timeZoneName: 'short'
                     };
-                    const formattedDate = this.lastModified.toLocaleDateString(undefined, options);
+                    const formattedDate = this.lastModified.toLocaleDateString('en-US', options);
                     lastUpdatedEl.textContent = formattedDate;
                 }
             }
@@ -763,54 +974,58 @@
                             }
                         }
                     },
-                    plugins: [{
-                        id: 'recessionBands',
-                        beforeDatasetsDraw: (chart) => {
-                            const { ctx, chartArea, scales } = chart;
-                            const filteredData = this.getFilteredData();
-                            
-                            if (!chartArea || !scales.x || !scales.y || filteredData.length === 0) return;
-                            
-                            ctx.save();
-                            
-                            let recessionStart = null;
-                            
-                            filteredData.forEach((dataPoint, index) => {
-                                const isRecession = dataPoint.recession === 1;
-                                const xPos = scales.x.getPixelForValue(index);
+                    plugins: [
+                        timeRangeSelector,  // ← Added this line
+                        {
+                            id: 'recessionBands',
+                            beforeDatasetsDraw: (chart) => {
+                                const { ctx, chartArea, scales } = chart;
+                                const filteredData = this.getFilteredData();
                                 
-                                if (isRecession && recessionStart === null) {
-                                    recessionStart = xPos;
-                                } else if (!isRecession && recessionStart !== null) {
+                                if (!chartArea || !scales.x || !scales.y || filteredData.length === 0) return;
+                                
+                                ctx.save();
+                                
+                                let recessionStart = null;
+                                
+                                filteredData.forEach((dataPoint, index) => {
+                                    const isRecession = dataPoint.recession === 1;
+                                    const xPos = scales.x.getPixelForValue(index);
+                                    
+                                    if (isRecession && recessionStart === null) {
+                                        recessionStart = xPos;
+                                    } else if (!isRecession && recessionStart !== null) {
+                                        ctx.fillStyle = 'rgba(108, 117, 125, 0.15)';
+                                        ctx.fillRect(
+                                            recessionStart,
+                                            chartArea.top,
+                                            xPos - recessionStart,
+                                            chartArea.bottom - chartArea.top
+                                        );
+                                        recessionStart = null;
+                                    }
+                                });
+                                
+                                if (recessionStart !== null) {
+                                    const lastIndex = filteredData.length - 1;
+                                    const endPos = scales.x.getPixelForValue(lastIndex);
                                     ctx.fillStyle = 'rgba(108, 117, 125, 0.15)';
                                     ctx.fillRect(
                                         recessionStart,
                                         chartArea.top,
-                                        xPos - recessionStart,
+                                        endPos - recessionStart,
                                         chartArea.bottom - chartArea.top
                                     );
-                                    recessionStart = null;
                                 }
-                            });
-                            
-                            if (recessionStart !== null) {
-                                const lastIndex = filteredData.length - 1;
-                                const endPos = scales.x.getPixelForValue(lastIndex);
-                                ctx.fillStyle = 'rgba(108, 117, 125, 0.15)';
-                                ctx.fillRect(
-                                    recessionStart,
-                                    chartArea.top,
-                                    endPos - recessionStart,
-                                    chartArea.bottom - chartArea.top
-                                );
+                                
+                                ctx.restore();
                             }
-                            
-                            ctx.restore();
                         }
-                    }]
+                    ]
                 });
 
                 this.chart.config._config.filteredData = this.getFilteredData();
+                this.chart.config._config.visualizer = this;  // ← Added this line
             }
 
             prepareChartData() {
