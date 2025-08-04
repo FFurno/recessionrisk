@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recession Risk Visualization</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #212529;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e9ecef;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #343a40 0%, #495057 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            border-bottom: 3px solid #6c757d;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #ffffff;
+            letter-spacing: -0.5px;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            color: #adb5bd;
+            font-weight: 400;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        /* New control panel with 5 boxes */
+        .control-panel {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .control-box {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .control-box:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .control-box-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #6c757d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+
+        .control-box-content {
+            font-size: 1rem;
+            color: #212529;
+        }
+
+        /* Country selector specific styling */
+        .country-select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 2px solid #dee2e6;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .country-select:focus {
+            outline: none;
+            border-color: #0072bd;
+            box-shadow: 0 0 0 3px rgba(0, 114, 189, 0.1);
+        }
+
+        /* Stats box specific styling */
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #0072bd;
+            margin-bottom: 4px;
+        }
+
+        .stat-range {
+            font-size: 0.85rem;
+            color: #6c757d;
+        }
+
+        .stat-period {
+            font-size: 0.9rem;
+            color: #495057;
+            margin-bottom: 8px;
+        }
+
+        /* Download button styling */
+        .download-button {
+            background: linear-gradient(135deg, #0072bd 0%, #005a96 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .download-button:hover {
+            background: linear-gradient(135deg, #005a96 0%, #004678 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 114, 189, 0.3);
+        }
+
+        .download-button svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Last update styling */
+        .last-update-time {
+            font-size: 1.3rem;
+            color: #0072bd;
+            font-weight: 700;
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 425px;
+            margin: 30px 0;
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 80px 20px;
+            color: #666;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #0072bd;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 25px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: linear-gradient(135deg, #fee 0%, #fdd 100%);
+            border: 2px solid #fcc;
+            color: #c66;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            font-weight: 500;
+        }
+
+        .time-range-container {
+            background: linear-gradient(135deg, #f1f3f4 0%, #e8eaed 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .range-label {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #444;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: block;
+            margin-bottom: 15px;
+        }
+
+        .range-slider-container {
+            position: relative;
+            padding: 15px 0;
+        }
+
+        .range-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: linear-gradient(to right, #ddd 0%, #ddd 100%);
+            outline: none;
+            position: absolute;
+            top: 15px;
+            pointer-events: none;
+        }
+
+        .range-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0072bd 0%, #005a96 100%);
+            cursor: pointer;
+            border: 3px solid white;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+            pointer-events: auto;
+            transition: transform 0.2s ease;
+        }
+
+        .range-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+        }
+
+        .range-slider::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0072bd 0%, #005a96 100%);
+            cursor: pointer;
+            border: 3px solid white;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+            pointer-events: auto;
+        }
+
+        #time-range-start {
+            background: linear-gradient(to right, #0072bd 0%, #0072bd var(--start-percent), #ddd var(--start-percent), #ddd 100%);
+        }
+
+        #time-range-end {
+            background: transparent;
+        }
+
+        .range-display {
+            text-align: center;
+            margin-top: 35px;
+            font-weight: 600;
+            color: #555;
+            font-size: 0.95rem;
+        }
+
+        .range-display span {
+            margin: 0 8px;
+        }
+
+        .range-display span:nth-child(odd) {
+            color: #0072bd;
+            font-weight: 700;
+        }
+
+        /* Responsive design */
+        @media (max-width: 1200px) {
+            .control-panel {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .control-panel {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .content {
+                padding: 25px;
+            }
+            
+            .chart-container {
+                height: 450px;
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Recession Risk </h1>
+            <p>Based on "<a href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4706700" style="color: #adb5bd; text-decoration: none;">Nowcasting Recession Risk</a>", by Furno, Giannone (2024)</p>
+        </div>
+        
+        <div class="content">
+            <div id="loading" class="loading">
+                <div class="loading-spinner"></div>
+                <p>Processing recession risk data...</p>
+            </div>
+            
+            <div id="error" class="error" style="display: none;"></div>
+            
+            <div id="chart-section" style="display: none;">
+                <!-- New unified control panel -->
+                <div class="control-panel">
+                    <!-- Country Selection Box -->
+                    <div class="control-box">
+                        <div class="control-box-title">Country</div>
+                        <div class="control-box-content">
+                            <select id="country-select" class="country-select">
+                                <option value="US" selected>United States</option>
+                                <option value="EA">Euro Area</option>
+                                <option value="DE">Germany</option>
+                                <option value="FRA">France</option>
+                                <option value="SPA">Spain</option>
+                                <option value="ITA">Italy</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Last Update Box -->
+                    <div class="control-box">
+                        <div class="control-box-title">Last Update</div>
+                        <div class="control-box-content">
+                            <div id="last-updated-text" class="last-update-time">--</div>
+                        </div>
+                    </div>
+
+                    <!-- Current Month Box -->
+                    <div class="control-box">
+                        <div class="control-box-title">Latest Month</div>
+                        <div class="control-box-content" id="current-month-stat">
+                            <div class="stat-value">--</div>
+                            <div class="stat-range">--</div>
+                        </div>
+                    </div>
+
+                    <!-- Last Month Box -->
+                    <div class="control-box">
+                        <div class="control-box-title">Previous Month</div>
+                        <div class="control-box-content" id="last-month-stat">
+                            <div class="stat-value">--</div>
+                            <div class="stat-range">--</div>
+                        </div>
+                    </div>
+
+                    <!-- Download Box -->
+                    <div class="control-box">
+                        <div class="control-box-title">Export Data</div>
+                        <div class="control-box-content">
+                            <button id="download-btn" class="download-button">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                    <polyline points="7,10 12,15 17,10"/>
+                                    <line x1="12" y1="15" x2="12" y2="3"/>
+                                </svg>
+                                Download
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Paper Download Box -->
+                    <div class="control-box">
+                        <div class="control-box-title">Methodology</div>
+                        <div class="control-box-content">
+                            <button onclick="window.open('nowcasting-recession-risk.pdf', '_blank')" class="download-button">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                    <polyline points="7,10 12,15 17,10"/>
+                                    <line x1="12" y1="15" x2="12" y2="3"/>
+                                </svg>
+                                Paper
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="chart"></canvas>
+                </div>
+                
+                <div class="time-range-container">
+                    <div class="range-slider-container">
+                        <input type="range" id="time-range-start" min="0" max="27" value="0" class="range-slider">
+                        <input type="range" id="time-range-end" min="0" max="27" value="27" class="range-slider">
+                        <div class="range-display">
+                            <span id="range-start-label">January 1980</span>
+                            <span>to</span>
+                            <span id="range-end-label">June 2025</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class RecessionRiskVisualizer {
+            constructor() {
+                this.data = null;
+                this.chart = null;
+                this.currentCountry = 'US';
+                this.csvData = null;
+                this.lastModified = null;
+                this.countryLabels = {
+                    'DE': 'Germany',
+                    'FRA': 'France', 
+                    'EA': 'Euro Area',
+                    'US': 'United States',
+                    'SPA': 'Spain',
+                    'ITA': 'Italy'
+                };
+                this.init();
+            }
+
+            async init() {
+                try {
+                    await this.loadCountryData();
+                    this.processData();
+                    this.setupControls();
+                    this.createChart();
+                    this.showStats();
+                    this.hideLoading();
+                    this.updateLastModified();
+                } catch (error) {
+                    this.showError(error.message);
+                }
+            }
+
+            async loadCountryData() {
+                try {
+                    const fileName = `recessionrisk_${this.currentCountry}.csv`;
+                    const response = await fetch(fileName);
+                    if (!response.ok) {
+                        throw new Error(`Could not load ${fileName}. Make sure the CSV file is in the same folder as this HTML file.`);
+                    }
+                    const csvText = await response.text();
+                    
+                    return new Promise((resolve, reject) => {
+                        Papa.parse(csvText, {
+                            header: true,
+                            dynamicTyping: true,
+                            skipEmptyLines: true,
+                            complete: (results) => {
+                                if (results.errors.length > 0) {
+                                    reject(new Error('CSV parsing error: ' + results.errors[0].message));
+                                } else if (!results.data || results.data.length === 0) {
+                                    reject(new Error('No data found in CSV file'));
+                                } else {
+                                    this.data = results.data;
+                                    this.csvData = csvText;
+                                    this.lastModified = new Date();
+                                    resolve();
+                                }
+                            },
+                            error: (error) => {
+                                reject(new Error('CSV parsing failed: ' + error.message));
+                            }
+                        });
+                    });
+                } catch (error) {
+                    throw new Error(`Failed to load CSV file: ${error.message}`);
+                }
+            }
+
+            processData() {
+                // Convert dates
+                this.data.forEach(row => {
+                    row.parsedDate = new Date(row.Time + ", 2000").getTime();
+                    const year = row.Time.includes("198") ? parseInt(row.Time.match(/\d{4}/)?.[0]) || 1980 :
+                                row.Time.includes("199") ? parseInt(row.Time.match(/\d{4}/)?.[0]) || 1990 :
+                                row.Time.includes("200") ? parseInt(row.Time.match(/\d{4}/)?.[0]) || 2000 :
+                                row.Time.includes("201") ? parseInt(row.Time.match(/\d{4}/)?.[0]) || 2010 :
+                                row.Time.includes("202") ? parseInt(row.Time.match(/\d{4}/)?.[0]) || 2020 : 2020;
+                    
+                    const month = row.Time.split(" ")[0];
+                    row.parsedDate = new Date(`${month} 1, ${year}`);
+                });
+
+                this.data.sort((a, b) => a.parsedDate - b.parsedDate);
+                this.columns = ['RecessionRisk_p50', 'RecessionRisk_p20', 'RecessionRisk_p80'];
+            }
+
+            setupControls() {
+                document.getElementById('time-range-start').addEventListener('input', () => this.handleRangeChange());
+                document.getElementById('time-range-end').addEventListener('input', () => this.handleRangeChange());
+                document.getElementById('country-select').addEventListener('change', () => this.handleCountryChange());
+                document.getElementById('download-btn').addEventListener('click', () => this.downloadCSV());
+                
+                this.updateRangeSliders();
+            }
+
+            async handleCountryChange() {
+                const newCountry = document.getElementById('country-select').value;
+                if (newCountry !== this.currentCountry) {
+                    this.currentCountry = newCountry;
+                    
+                    try {
+                        await this.loadCountryData();
+                        this.processData();
+                        this.updateRangeSliders();
+                        this.updateChart();
+                        this.showStats();
+                        this.updateLastModified();
+                    } catch (error) {
+                        this.showError(`Failed to load data for selected country: ${error.message}`);
+                    }
+                }
+            }
+
+            downloadCSV() {
+                if (!this.csvData) {
+                    this.csvData = this.generateCSVContent();
+                }
+
+                const countryLabel = this.countryLabels[this.currentCountry] || 'data';
+                const filename = `recession_risk_${countryLabel.replace(/\s+/g, '_')}.csv`;
+                const blob = new Blob([this.csvData], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                
+                if (link.download !== undefined) {
+                    const url = URL.createObjectURL(blob);
+                    link.setAttribute('href', url);
+                    link.setAttribute('download', filename);
+                    link.style.visibility = 'hidden';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }
+            }
+
+            generateCSVContent() {
+                if (!this.data || this.data.length === 0) {
+                    return 'Time,RecessionRisk_p50,RecessionRisk_p20,RecessionRisk_p80,recession\n';
+                }
+                
+                let csv = 'Time,RecessionRisk_p50,RecessionRisk_p20,RecessionRisk_p80,recession\n';
+                
+                this.data.forEach(row => {
+                    csv += `${row.Time || ''},${row.RecessionRisk_p50 || ''},${row.RecessionRisk_p20 || ''},${row.RecessionRisk_p80 || ''},${row.recession || ''}\n`;
+                });
+                
+                return csv;
+            }
+
+            updateLastModified() {
+                const lastUpdatedEl = document.getElementById('last-updated-text');
+                if (this.lastModified && lastUpdatedEl) {
+                    const options = { 
+                        year: 'numeric', 
+                        month: 'short', 
+                        day: 'numeric'
+                    };
+                    const formattedDate = this.lastModified.toLocaleDateString('en-US', options);
+                    lastUpdatedEl.textContent = formattedDate;
+                }
+            }
+
+            handleRangeChange() {
+                const startSlider = document.getElementById('time-range-start');
+                const endSlider = document.getElementById('time-range-end');
+                
+                let startVal = parseInt(startSlider.value);
+                let endVal = parseInt(endSlider.value);
+                
+                if (startVal >= endVal) {
+                    if (startSlider === document.activeElement) {
+                        endVal = Math.min(startVal + 1, this.data.length - 1);
+                        endSlider.value = endVal;
+                    } else {
+                        startVal = Math.max(endVal - 1, 0);
+                        startSlider.value = startVal;
+                    }
+                }
+
+                this.updateRangeLabels();
+                this.updateChart();
+            }
+
+            updateRangeSliders() {
+                if (!this.data || this.data.length === 0) {
+                    return;
+                }
+                
+                const startSlider = document.getElementById('time-range-start');
+                const endSlider = document.getElementById('time-range-end');
+                
+                if (startSlider && endSlider) {
+                    startSlider.max = this.data.length - 1;
+                    endSlider.max = this.data.length - 1;
+                    endSlider.value = this.data.length - 1;
+                    
+                    this.updateRangeLabels();
+                }
+            }
+
+            updateRangeLabels() {
+                if (!this.data || this.data.length === 0) {
+                    return;
+                }
+                
+                const startIndex = parseInt(document.getElementById('time-range-start')?.value || 0);
+                const endIndex = parseInt(document.getElementById('time-range-end')?.value || this.data.length - 1);
+                
+                const startLabel = document.getElementById('range-start-label');
+                const endLabel = document.getElementById('range-end-label');
+                
+                if (startLabel && this.data[startIndex]) {
+                    startLabel.textContent = this.data[startIndex].Time || '';
+                }
+                if (endLabel && this.data[endIndex]) {
+                    endLabel.textContent = this.data[endIndex].Time || '';
+                }
+            }
+
+            getFilteredData() {
+                if (!this.data || this.data.length === 0) {
+                    return [];
+                }
+                
+                const startIndex = parseInt(document.getElementById('time-range-start')?.value || 0);
+                const endIndex = parseInt(document.getElementById('time-range-end')?.value || this.data.length - 1);
+                
+                return this.data.slice(startIndex, Math.min(endIndex + 1, this.data.length));
+            }
+
+            createChart() {
+                const ctx = document.getElementById('chart').getContext('2d');
+                const chartData = this.prepareChartData();
+
+                if (this.chart) {
+                    this.chart.destroy();
+                }
+
+                this.chart = new Chart(ctx, {
+                    type: 'line',
+                    data: chartData,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: `${this.countryLabels[this.currentCountry]} - Recession Risk`,
+                                font: { size: 18, weight: 'bold' },
+                                color: '#333'
+                            },
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                mode: 'index',
+                                intersect: false,
+                                filter: function(tooltipItem) {
+                                    return tooltipItem.datasetIndex === 1;
+                                },
+                                callbacks: {
+                                    label: function(context) {
+                                        const filteredData = context.chart.config._config.filteredData || [];
+                                        const dataPoint = filteredData[context.dataIndex];
+                                        if (dataPoint) {
+                                            return [
+                                                `Median: ${(dataPoint.RecessionRisk_p50 * 100).toFixed(1)}%`,
+                                                `Range: ${(dataPoint.RecessionRisk_p20 * 100).toFixed(1)}% - ${(dataPoint.RecessionRisk_p80 * 100).toFixed(1)}%`
+                                            ];
+                                        }
+                                        return `${context.dataset.label}: ${(context.parsed.y * 100).toFixed(1)}%`;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                display: true,
+                                ticks: {
+                                    maxRotation: 45,
+                                    font: { size: 10 }
+                                }
+                            },
+                            y: {
+                                display: true,
+                                title: {
+                                    display: true,
+                                    text: 'Recession Risk',
+                                    font: { size: 14, weight: 'bold' }
+                                },
+                                ticks: {
+                                    callback: function(value) {
+                                        return (value * 100).toFixed(0) + '%';
+                                    }
+                                },
+                                min: 0,
+                                max: 1
+                            }
+                        },
+                        interaction: {
+                            intersect: false,
+                            mode: 'index'
+                        },
+                        elements: {
+                            point: {
+                                radius: 0,
+                                hoverRadius: 6
+                            }
+                        }
+                    },
+                    plugins: [{
+                        id: 'recessionBands',
+                        beforeDatasetsDraw: (chart) => {
+                            const { ctx, chartArea, scales } = chart;
+                            const filteredData = this.getFilteredData();
+                            
+                            if (!chartArea || !scales.x || !scales.y || filteredData.length === 0) return;
+                            
+                            ctx.save();
+                            
+                            let recessionStart = null;
+                            
+                            filteredData.forEach((dataPoint, index) => {
+                                const isRecession = dataPoint.recession === 1;
+                                const xPos = scales.x.getPixelForValue(index);
+                                
+                                if (isRecession && recessionStart === null) {
+                                    recessionStart = xPos;
+                                } else if (!isRecession && recessionStart !== null) {
+                                    ctx.fillStyle = 'rgba(108, 117, 125, 0.15)';
+                                    ctx.fillRect(
+                                        recessionStart,
+                                        chartArea.top,
+                                        xPos - recessionStart,
+                                        chartArea.bottom - chartArea.top
+                                    );
+                                    recessionStart = null;
+                                }
+                            });
+                            
+                            if (recessionStart !== null) {
+                                const lastIndex = filteredData.length - 1;
+                                const endPos = scales.x.getPixelForValue(lastIndex);
+                                ctx.fillStyle = 'rgba(108, 117, 125, 0.15)';
+                                ctx.fillRect(
+                                    recessionStart,
+                                    chartArea.top,
+                                    endPos - recessionStart,
+                                    chartArea.bottom - chartArea.top
+                                );
+                            }
+                            
+                            ctx.restore();
+                        }
+                    }]
+                });
+
+                this.chart.config._config.filteredData = this.getFilteredData();
+            }
+
+            prepareChartData() {
+                const filteredData = this.getFilteredData();
+                const labels = filteredData.map(row => row.Time);
+
+                return {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Upper Bound (p80)',
+                            data: filteredData.map(row => row.RecessionRisk_p80),
+                            borderColor: 'transparent',
+                            backgroundColor: 'rgba(0, 114, 189, 0.15)',
+                            fill: '+1',
+                            tension: 0.2,
+                            pointRadius: 0,
+                            pointHoverRadius: 0,
+                            order: 3
+                        },
+                        {
+                            label: 'Recession Risk (Median)',
+                            data: filteredData.map(row => row.RecessionRisk_p50),
+                            borderColor: 'rgb(0, 114, 189)',
+                            backgroundColor: 'rgba(0, 114, 189, 0.15)',
+                            borderWidth: 2.5,
+                            fill: '+1',
+                            tension: 0.2,
+                            pointRadius: 0,
+                            pointHoverRadius: 6,
+                            order: 1
+                        },
+                        {
+                            label: 'Lower Bound (p20)',
+                            data: filteredData.map(row => row.RecessionRisk_p20),
+                            borderColor: 'transparent',
+                            backgroundColor: 'rgba(0, 114, 189, 0.0)',
+                            fill: 'origin',
+                            tension: 0.2,
+                            pointRadius: 0,
+                            pointHoverRadius: 0,
+                            order: 2
+                        }
+                    ]
+                };
+            }
+
+            updateChart() {
+                this.createChart();
+                this.showStats();
+            }
+
+            showStats() {
+                const filteredData = this.getFilteredData();
+                
+                const currentMonthEl = document.getElementById('current-month-stat');
+                const lastMonthEl = document.getElementById('last-month-stat');
+                
+                if (!filteredData || filteredData.length === 0) {
+                    if (currentMonthEl) {
+                        currentMonthEl.innerHTML = `
+                            <div class="stat-value">--</div>
+                            <div class="stat-range">--</div>
+                       `;
+                   }
+                   if (lastMonthEl) {
+                       lastMonthEl.innerHTML = `
+                           <div class="stat-value">--</div>
+                           <div class="stat-range">--</div>
+                       `;
+                   }
+                   return;
+               }
+
+               // Get the last two data points (current and previous month)
+               const currentMonth = filteredData[filteredData.length - 1];
+               const lastMonth = filteredData.length > 1 ? filteredData[filteredData.length - 2] : null;
+
+               // Update current month box
+               if (currentMonthEl && currentMonth) {
+                   currentMonthEl.innerHTML = `
+                       <div class="stat-period">${currentMonth.Time}</div>
+                       <div class="stat-value">${(currentMonth.RecessionRisk_p50 * 100).toFixed(1)}%</div>
+                       <div class="stat-range">[${(currentMonth.RecessionRisk_p20 * 100).toFixed(1)}% - ${(currentMonth.RecessionRisk_p80 * 100).toFixed(1)}%]</div>
+                   `;
+               }
+
+               // Update last month box
+               if (lastMonthEl) {
+                   if (lastMonth) {
+                       lastMonthEl.innerHTML = `
+                           <div class="stat-period">${lastMonth.Time}</div>
+                           <div class="stat-value">${(lastMonth.RecessionRisk_p50 * 100).toFixed(1)}%</div>
+                           <div class="stat-range">[${(lastMonth.RecessionRisk_p20 * 100).toFixed(1)}% - ${(lastMonth.RecessionRisk_p80 * 100).toFixed(1)}%]</div>
+                       `;
+                   } else {
+                       lastMonthEl.innerHTML = `
+                           <div class="stat-value">--</div>
+                           <div class="stat-range">--</div>
+                       `;
+                   }
+               }
+           }
+
+           hideLoading() {
+               document.getElementById('loading').style.display = 'none';
+               document.getElementById('chart-section').style.display = 'block';
+           }
+
+           showError(message) {
+               document.getElementById('loading').style.display = 'none';
+               const errorDiv = document.getElementById('error');
+               errorDiv.textContent = message;
+               errorDiv.style.display = 'block';
+           }
+       }
+
+       // Initialize when page loads
+       document.addEventListener('DOMContentLoaded', () => {
+           new RecessionRiskVisualizer();
+       });
+   </script>
+</body>
+</html>
