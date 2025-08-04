@@ -58,7 +58,7 @@
             padding: 40px;
         }
 
-        /* New control panel with 5 boxes */
+        /* New control panel */
         .control-panel {
             display: grid;
             grid-template-columns: repeat(6, 1fr);
@@ -455,6 +455,7 @@
             async init() {
                 try {
                     await this.loadCountryData();
+                    await this.loadMetaData();
                     this.processData();
                     this.setupControls();
                     this.createChart();
@@ -501,7 +502,24 @@
                     throw new Error(`Failed to load CSV file: ${error.message}`);
                 }
             }
-
+            
+            async loadMetadata() {
+                try {
+                    const metaResponse = await fetch('metadata.json');
+                    if (metaResponse.ok) {
+                        const metadata = await metaResponse.json();
+                        this.lastModified = new Date(metadata.last_updated);
+                    } else {
+                        // Fallback to current date if metadata file doesn't exist
+                        console.warn('metadata.json not found, using current date');
+                        this.lastModified = new Date();
+                    }
+                } catch (metaError) {
+                    console.warn('Could not load metadata.json, using current date:', metaError);
+                    this.lastModified = new Date();
+                }
+            }
+            
             processData() {
                 // Convert dates
                 this.data.forEach(row => {
@@ -540,7 +558,6 @@
                         this.updateRangeSliders();
                         this.updateChart();
                         this.showStats();
-                        this.updateLastModified();
                     } catch (error) {
                         this.showError(`Failed to load data for selected country: ${error.message}`);
                     }
