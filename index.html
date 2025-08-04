@@ -275,10 +275,10 @@
         #time-range-start {
             background: linear-gradient(to right, 
                 #ddd 0%, 
-                #ddd 0%, 
-                #0072bd 0%, 
-                #0072bd 100%, 
-                #ddd 100%, 
+                #ddd var(--start-percent, 0%), 
+                #0072bd var(--start-percent, 0%), 
+                #0072bd var(--end-percent, 100%), 
+                #ddd var(--end-percent, 100%), 
                 #ddd 100%);
             z-index: 1;
         }
@@ -601,6 +601,7 @@
                         const visualizer = chart.config._config.visualizer;
                         if (visualizer) {
                             visualizer.updateRangeLabels();
+                            visualizer.updateVisualRange();
                             visualizer.updateChart();
                         }
                     }
@@ -797,356 +798,383 @@
             }
 
             generateCSVContent() {
-                if (!this.data || this.data.length === 0) {
-                    return 'Time,RecessionRisk_p50,RecessionRisk_p20,RecessionRisk_p80,recession\n';
-                }
-                
-                let csv = 'Time,RecessionRisk_p50,RecessionRisk_p20,RecessionRisk_p80,recession\n';
-                
-                this.data.forEach(row => {
-                    csv += `${row.Time || ''},${row.RecessionRisk_p50 || ''},${row.RecessionRisk_p20 || ''},${row.RecessionRisk_p80 || ''},${row.recession || ''}\n`;
-                });
-                
-                return csv;
-            }
+                        if (!this.data || this.data.length === 0) {
+                            return 'Time,RecessionRisk_p50,RecessionRisk_p20,RecessionRisk_p80,recession\n';
+                        }
+                        
+                        let csv = 'Time,RecessionRisk_p50,RecessionRisk_p20,RecessionRisk_p80,recession\n';
+                        
+                        this.data.forEach(row => {
+                            csv += `${row.Time || ''},${row.RecessionRisk_p50 || ''},${row.RecessionRisk_p20 || ''},${row.RecessionRisk_p80 || ''},${row.recession || ''}\n`;
+                        });
+                        
+                        return csv;
+                    }
 
-            updateLastModified() {
-                const lastUpdatedEl = document.getElementById('last-updated-text');
-                if (this.lastModified && lastUpdatedEl) {
-                    const options = { 
-                        year: 'numeric', 
-                        month: 'short', 
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        timeZoneName: 'short'
-                    };
-                    const formattedDate = this.lastModified.toLocaleDateString('en-US', options);
-                    lastUpdatedEl.textContent = formattedDate;
-                }
-            }
+                    updateLastModified() {
+                        const lastUpdatedEl = document.getElementById('last-updated-text');
+                        if (this.lastModified && lastUpdatedEl) {
+                            const options = { 
+                                year: 'numeric', 
+                                month: 'short', 
+                                day: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                timeZoneName: 'short'
+                            };
+                            const formattedDate = this.lastModified.toLocaleDateString('en-US', options);
+                            lastUpdatedEl.textContent = formattedDate;
+                        }
+                    }
 
-            handleRangeChange() {
-                const startSlider = document.getElementById('time-range-start');
-                const endSlider = document.getElementById('time-range-end');
-                
-                let startVal = parseInt(startSlider.value);
-                let endVal = parseInt(endSlider.value);
-                
-                if (startVal >= endVal) {
-                    if (startSlider === document.activeElement) {
-                        endVal = Math.min(startVal + 1, this.data.length - 1);
-                        endSlider.value = endVal;
-                    } else {
-                        startVal = Math.max(endVal - 1, 0);
-                        startSlider.value = startVal;
+                    updateVisualRange() {
+                        if (!this.data || this.data.length === 0) return;
+                        
+                        const startSlider = document.getElementById('time-range-start');
+                        const endSlider = document.getElementById('time-range-end');
+                        
+                        const startVal = parseInt(startSlider.value);
+                        const endVal = parseInt(endSlider.value);
+                        const maxVal = parseInt(startSlider.max);
+                        
+                        const startPercent = (startVal / maxVal) * 100;
+                        const endPercent = (endVal / maxVal) * 100;
+                        
+                        // Update CSS custom properties for the blue bar
+                        startSlider.style.setProperty('--start-percent', `${startPercent}%`);
+                        startSlider.style.setProperty('--end-percent', `${endPercent}%`);
+                        
+                        console.log('📊 Updating visual range:', startPercent.toFixed(1) + '%', 'to', endPercent.toFixed(1) + '%');
+                    }
+
+                    handleRangeChange() {
+                        const startSlider = document.getElementById('time-range-start');
+                        const endSlider = document.getElementById('time-range-end');
+                        
+                        let startVal = parseInt(startSlider.value);
+                        let endVal = parseInt(endSlider.value);
+                        
+                        if (startVal >= endVal) {
+                            if (startSlider === document.activeElement) {
+                                endVal = Math.min(startVal + 1, this.data.length - 1);
+                                endSlider.value = endVal;
+                            } else {
+                                startVal = Math.max(endVal - 1, 0);
+                                startSlider.value = startVal;
+                            }
+                        }
+
+                        this.updateRangeLabels();
+                        this.updateVisualRange();
+                        this.updateChart();
+                    }
+
+                    updateRangeSliders() {
+                        if (!this.data || this.data.length === 0) {
+                            return;
+                        }
+                        
+                        const startSlider = document.getElementById('time-range-start');
+                        const endSlider = document.getElementById('time-range-end');
+                        
+                        if (startSlider && endSlider) {
+                            startSlider.max = this.data.length - 1;
+                            endSlider.max = this.data.length - 1;
+                            endSlider.value = this.data.length - 1;
+                            
+                            this.updateRangeLabels();
+                            this.updateVisualRange();
+                        }
+                    }
+
+                    updateRangeLabels() {
+                        if (!this.data || this.data.length === 0) {
+                            return;
+                        }
+                        
+                        const startIndex = parseInt(document.getElementById('time-range-start')?.value || 0);
+                        const endIndex = parseInt(document.getElementById('time-range-end')?.value || this.data.length - 1);
+                        
+                        const startLabel = document.getElementById('range-start-label');
+                        const endLabel = document.getElementById('range-end-label');
+                        
+                        if (startLabel && this.data[startIndex]) {
+                            startLabel.textContent = this.data[startIndex].Time || '';
+                        }
+                        if (endLabel && this.data[endIndex]) {
+                            endLabel.textContent = this.data[endIndex].Time || '';
+                        }
+                    }
+
+                    getFilteredData() {
+                        if (!this.data || this.data.length === 0) {
+                            return [];
+                        }
+                        
+                        const startIndex = parseInt(document.getElementById('time-range-start')?.value || 0);
+                        const endIndex = parseInt(document.getElementById('time-range-end')?.value || this.data.length - 1);
+                        
+                        return this.data.slice(startIndex, Math.min(endIndex + 1, this.data.length));
+                    }
+
+                    createChart() {
+                        const ctx = document.getElementById('chart').getContext('2d');
+                        const chartData = this.prepareChartData();
+
+                        if (this.chart) {
+                            this.chart.destroy();
+                        }
+
+                        this.chart = new Chart(ctx, {
+                            type: 'line',
+                            data: chartData,
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    title: {
+                                        display: true,
+                                        text: `${this.countryLabels[this.currentCountry]} - Recession Risk`,
+                                        font: { size: 18, weight: 'bold' },
+                                        color: '#333'
+                                    },
+                                    legend: {
+                                        display: false
+                                    },
+                                    tooltip: {
+                                        mode: 'index',
+                                        intersect: false,
+                                        filter: function(tooltipItem) {
+                                            return tooltipItem.datasetIndex === 1;
+                                        },
+                                        callbacks: {
+                                            label: function(context) {
+                                                const filteredData = context.chart.config._config.filteredData || [];
+                                                const dataPoint = filteredData[context.dataIndex];
+                                                if (dataPoint) {
+                                                    return [
+                                                        `Median: ${(dataPoint.RecessionRisk_p50 * 100).toFixed(1)}%`,
+                                                        `Range: ${(dataPoint.RecessionRisk_p20 * 100).toFixed(1)}% - ${(dataPoint.RecessionRisk_p80 * 100).toFixed(1)}%`
+                                                    ];
+                                                }
+                                                return `${context.dataset.label}: ${(context.parsed.y * 100).toFixed(1)}%`;
+                                            }
+                                        }
+                                    }
+                                },
+                                scales: {
+                                    x: {
+                                        display: true,
+                                        ticks: {
+                                            maxRotation: 45,
+                                            font: { size: 10 }
+                                        }
+                                    },
+                                    y: {
+                                        display: true,
+                                        title: {
+                                            display: true,
+                                            text: 'Recession Risk',
+                                            font: { size: 14, weight: 'bold' }
+                                        },
+                                        ticks: {
+                                            callback: function(value) {
+                                                return (value * 100).toFixed(0) + '%';
+                                            }
+                                        },
+                                        min: 0,
+                                        max: 1
+                                    }
+                                },
+                                interaction: {
+                                    intersect: false,
+                                    mode: 'index'
+                                },
+                                elements: {
+                                    point: {
+                                        radius: 0,
+                                        hoverRadius: 6
+                                    }
+                                }
+                            },
+                            plugins: [
+                                timeRangeSelector,
+                                {
+                                    id: 'recessionBands',
+                                    beforeDatasetsDraw: (chart) => {
+                                        const { ctx, chartArea, scales } = chart;
+                                        const filteredData = this.getFilteredData();
+                                        
+                                        if (!chartArea || !scales.x || !scales.y || filteredData.length === 0) return;
+                                        
+                                        ctx.save();
+                                        
+                                        // Find all recession periods
+                                        let i = 0;
+                                        while (i < filteredData.length) {
+                                            // Look for the start of a recession period
+                                            if (filteredData[i].recession === 1) {
+                                                let recessionStart = i;
+                                                let recessionEnd = i;
+                                                
+                                                // Find the end of this recession period
+                                                while (recessionEnd < filteredData.length - 1 && filteredData[recessionEnd + 1].recession === 1) {
+                                                    recessionEnd++;
+                                                }
+                                                
+                                                // Calculate shading boundaries
+                                                // Start: one month before first recession month (or beginning of chart)
+                                                let shadingStart = Math.max(0, recessionStart - 1);
+                                                // End: last recession month
+                                                let shadingEnd = recessionEnd;
+                                                
+                                                // Draw rectangles for each period in the shading range
+                                                // Changed: j < shadingEnd (not j <= shadingEnd)
+                                                for (let j = shadingStart; j < shadingEnd; j++) {
+                                                    const startX = scales.x.getPixelForValue(j);
+                                                    const endX = scales.x.getPixelForValue(j + 1);
+                                                    
+                                                    ctx.fillStyle = 'rgba(108, 117, 125, 0.15)';
+                                                    ctx.fillRect(
+                                                        startX,
+                                                        chartArea.top,
+                                                        endX - startX,
+                                                        chartArea.bottom - chartArea.top
+                                                    );
+                                                }
+                                                
+                                                // Move past this recession period
+                                                i = recessionEnd + 1;
+                                            } else {
+                                                i++;
+                                            }
+                                        }
+                                        
+                                        ctx.restore();
+                                    }
+                                }
+                            ]
+                        });
+
+                        this.chart.config._config.filteredData = this.getFilteredData();
+                        this.chart.config._config.visualizer = this;
+                    }
+
+                    prepareChartData() {
+                        const filteredData = this.getFilteredData();
+                        const labels = filteredData.map(row => row.Time);
+
+                        return {
+                            labels: labels,
+                            datasets: [
+                                {
+                                    label: 'Upper Bound (p80)',
+                                    data: filteredData.map(row => row.RecessionRisk_p80),
+                                    borderColor: 'transparent',
+                                    backgroundColor: 'rgba(0, 114, 189, 0.15)',
+                                    fill: '+1',
+                                    tension: 0.2,
+                                    pointRadius: 0,
+                                    pointHoverRadius: 0,
+                                    order: 3
+                                },
+                                {
+                                    label: 'Recession Risk (Median)',
+                                    data: filteredData.map(row => row.RecessionRisk_p50),
+                                    borderColor: 'rgb(0, 114, 189)',
+                                    backgroundColor: 'rgba(0, 114, 189, 0.15)',
+                                    borderWidth: 2.5,
+                                    fill: '+1',
+                                    tension: 0.2,
+                                    pointRadius: 0,
+                                    pointHoverRadius: 6,
+                                    order: 1
+                                },
+                                {
+                                    label: 'Lower Bound (p20)',
+                                    data: filteredData.map(row => row.RecessionRisk_p20),
+                                    borderColor: 'transparent',
+                                    backgroundColor: 'rgba(0, 114, 189, 0.0)',
+                                    fill: 'origin',
+                                    tension: 0.2,
+                                    pointRadius: 0,
+                                    pointHoverRadius: 0,
+                                    order: 2
+                                }
+                            ]
+                        };
+                    }
+
+                    updateChart() {
+                        this.createChart();
+                        this.showStats();
+                    }
+
+                    showStats() {
+                        const filteredData = this.getFilteredData();
+                        
+                        const currentMonthEl = document.getElementById('current-month-stat');
+                        const lastMonthEl = document.getElementById('last-month-stat');
+                        
+                        if (!filteredData || filteredData.length === 0) {
+                            if (currentMonthEl) {
+                                currentMonthEl.innerHTML = `
+                                    <div class="stat-value">--</div>
+                                    <div class="stat-range">--</div>
+                                `;
+                            }
+                            if (lastMonthEl) {
+                                lastMonthEl.innerHTML = `
+                                    <div class="stat-value">--</div>
+                                    <div class="stat-range">--</div>
+                                `;
+                            }
+                            return;
+                        }
+
+                        const currentMonth = filteredData[filteredData.length - 1];
+                        const lastMonth = filteredData.length > 1 ? filteredData[filteredData.length - 2] : null;
+
+                        if (currentMonthEl && currentMonth) {
+                            currentMonthEl.innerHTML = `
+                                <div class="stat-period">${currentMonth.Time}</div>
+                                <div class="stat-value">${(currentMonth.RecessionRisk_p50 * 100).toFixed(1)}%</div>
+                                <div class="stat-range">[${(currentMonth.RecessionRisk_p20 * 100).toFixed(1)}% - ${(currentMonth.RecessionRisk_p80 * 100).toFixed(1)}%]</div>
+                            `;
+                        }
+
+                        if (lastMonthEl) {
+                            if (lastMonth) {
+                                lastMonthEl.innerHTML = `
+                                    <div class="stat-period">${lastMonth.Time}</div>
+                                    <div class="stat-value">${(lastMonth.RecessionRisk_p50 * 100).toFixed(1)}%</div>
+                                    <div class="stat-range">[${(lastMonth.RecessionRisk_p20 * 100).toFixed(1)}% - ${(lastMonth.RecessionRisk_p80 * 100).toFixed(1)}%]</div>
+                                `;
+                            } else {
+                                lastMonthEl.innerHTML = `
+                                    <div class="stat-value">--</div>
+                                    <div class="stat-range">--</div>
+                                `;
+                            }
+                        }
+                    }
+
+                    hideLoading() {
+                        document.getElementById('loading').style.display = 'none';
+                        document.getElementById('chart-section').style.display = 'block';
+                    }
+
+                    showError(message) {
+                        document.getElementById('loading').style.display = 'none';
+                        const errorDiv = document.getElementById('error');
+                        errorDiv.textContent = message;
+                        errorDiv.style.display = 'block';
                     }
                 }
 
-                this.updateRangeLabels();
-                this.updateChart();
-            }
-
-            updateRangeSliders() {
-                if (!this.data || this.data.length === 0) {
-                    return;
-                }
-                
-                const startSlider = document.getElementById('time-range-start');
-                const endSlider = document.getElementById('time-range-end');
-                
-                if (startSlider && endSlider) {
-                    startSlider.max = this.data.length - 1;
-                    endSlider.max = this.data.length - 1;
-                    endSlider.value = this.data.length - 1;
-                    
-                    this.updateRangeLabels();
-                }
-            }
-
-            updateRangeLabels() {
-                if (!this.data || this.data.length === 0) {
-                    return;
-                }
-                
-                const startIndex = parseInt(document.getElementById('time-range-start')?.value || 0);
-                const endIndex = parseInt(document.getElementById('time-range-end')?.value || this.data.length - 1);
-                
-                const startLabel = document.getElementById('range-start-label');
-                const endLabel = document.getElementById('range-end-label');
-                
-                if (startLabel && this.data[startIndex]) {
-                    startLabel.textContent = this.data[startIndex].Time || '';
-                }
-                if (endLabel && this.data[endIndex]) {
-                    endLabel.textContent = this.data[endIndex].Time || '';
-                }
-            }
-
-            getFilteredData() {
-                if (!this.data || this.data.length === 0) {
-                    return [];
-                }
-                
-                const startIndex = parseInt(document.getElementById('time-range-start')?.value || 0);
-                const endIndex = parseInt(document.getElementById('time-range-end')?.value || this.data.length - 1);
-                
-                return this.data.slice(startIndex, Math.min(endIndex + 1, this.data.length));
-            }
-
-            createChart() {
-                const ctx = document.getElementById('chart').getContext('2d');
-                const chartData = this.prepareChartData();
-
-                if (this.chart) {
-                    this.chart.destroy();
-                }
-
-                this.chart = new Chart(ctx, {
-                    type: 'line',
-                    data: chartData,
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            title: {
-                                display: true,
-                                text: `${this.countryLabels[this.currentCountry]} - Recession Risk`,
-                                font: { size: 18, weight: 'bold' },
-                                color: '#333'
-                            },
-                            legend: {
-                                display: false
-                            },
-                            tooltip: {
-                                mode: 'index',
-                                intersect: false,
-                                filter: function(tooltipItem) {
-                                    return tooltipItem.datasetIndex === 1;
-                                },
-                                callbacks: {
-                                    label: function(context) {
-                                        const filteredData = context.chart.config._config.filteredData || [];
-                                        const dataPoint = filteredData[context.dataIndex];
-                                        if (dataPoint) {
-                                            return [
-                                                `Median: ${(dataPoint.RecessionRisk_p50 * 100).toFixed(1)}%`,
-                                                `Range: ${(dataPoint.RecessionRisk_p20 * 100).toFixed(1)}% - ${(dataPoint.RecessionRisk_p80 * 100).toFixed(1)}%`
-                                            ];
-                                        }
-                                        return `${context.dataset.label}: ${(context.parsed.y * 100).toFixed(1)}%`;
-                                    }
-                                }
-                            }
-                        },
-                        scales: {
-                            x: {
-                                display: true,
-                                ticks: {
-                                    maxRotation: 45,
-                                    font: { size: 10 }
-                                }
-                            },
-                            y: {
-                                display: true,
-                                title: {
-                                    display: true,
-                                    text: 'Recession Risk',
-                                    font: { size: 14, weight: 'bold' }
-                                },
-                                ticks: {
-                                    callback: function(value) {
-                                        return (value * 100).toFixed(0) + '%';
-                                    }
-                                },
-                                min: 0,
-                                max: 1
-                            }
-                        },
-                        interaction: {
-                            intersect: false,
-                            mode: 'index'
-                        },
-                        elements: {
-                            point: {
-                                radius: 0,
-                                hoverRadius: 6
-                            }
-                        }
-                    },
-                    plugins: [
-                        timeRangeSelector,  // ← Added this line
-                        {
-                            id: 'recessionBands',
-                            beforeDatasetsDraw: (chart) => {
-                                const { ctx, chartArea, scales } = chart;
-                                const filteredData = this.getFilteredData();
-                                
-                                if (!chartArea || !scales.x || !scales.y || filteredData.length === 0) return;
-                                
-                                ctx.save();
-                                
-                                let recessionStart = null;
-                                
-                                filteredData.forEach((dataPoint, index) => {
-                                    const isRecession = dataPoint.recession === 1;
-                                    const xPos = scales.x.getPixelForValue(index);
-                                    
-                                    if (isRecession && recessionStart === null) {
-                                        recessionStart = xPos;
-                                    } else if (!isRecession && recessionStart !== null) {
-                                        ctx.fillStyle = 'rgba(108, 117, 125, 0.15)';
-                                        ctx.fillRect(
-                                            recessionStart,
-                                            chartArea.top,
-                                            xPos - recessionStart,
-                                            chartArea.bottom - chartArea.top
-                                        );
-                                        recessionStart = null;
-                                    }
-                                });
-                                
-                                if (recessionStart !== null) {
-                                    const lastIndex = filteredData.length - 1;
-                                    const endPos = scales.x.getPixelForValue(lastIndex);
-                                    ctx.fillStyle = 'rgba(108, 117, 125, 0.15)';
-                                    ctx.fillRect(
-                                        recessionStart,
-                                        chartArea.top,
-                                        endPos - recessionStart,
-                                        chartArea.bottom - chartArea.top
-                                    );
-                                }
-                                
-                                ctx.restore();
-                            }
-                        }
-                    ]
+                document.addEventListener('DOMContentLoaded', () => {
+                    new RecessionRiskVisualizer();
                 });
-
-                this.chart.config._config.filteredData = this.getFilteredData();
-                this.chart.config._config.visualizer = this;  // ← Added this line
-            }
-
-            prepareChartData() {
-                const filteredData = this.getFilteredData();
-                const labels = filteredData.map(row => row.Time);
-
-                return {
-                    labels: labels,
-                    datasets: [
-                        {
-                            label: 'Upper Bound (p80)',
-                            data: filteredData.map(row => row.RecessionRisk_p80),
-                            borderColor: 'transparent',
-                            backgroundColor: 'rgba(0, 114, 189, 0.15)',
-                            fill: '+1',
-                            tension: 0.2,
-                            pointRadius: 0,
-                            pointHoverRadius: 0,
-                            order: 3
-                        },
-                        {
-                            label: 'Recession Risk (Median)',
-                            data: filteredData.map(row => row.RecessionRisk_p50),
-                            borderColor: 'rgb(0, 114, 189)',
-                            backgroundColor: 'rgba(0, 114, 189, 0.15)',
-                            borderWidth: 2.5,
-                            fill: '+1',
-                            tension: 0.2,
-                            pointRadius: 0,
-                            pointHoverRadius: 6,
-                            order: 1
-                        },
-                        {
-                            label: 'Lower Bound (p20)',
-                            data: filteredData.map(row => row.RecessionRisk_p20),
-                            borderColor: 'transparent',
-                            backgroundColor: 'rgba(0, 114, 189, 0.0)',
-                            fill: 'origin',
-                            tension: 0.2,
-                            pointRadius: 0,
-                            pointHoverRadius: 0,
-                            order: 2
-                        }
-                    ]
-                };
-            }
-
-            updateChart() {
-                this.createChart();
-                this.showStats();
-            }
-
-            showStats() {
-                const filteredData = this.getFilteredData();
-                
-                const currentMonthEl = document.getElementById('current-month-stat');
-                const lastMonthEl = document.getElementById('last-month-stat');
-                
-                if (!filteredData || filteredData.length === 0) {
-                    if (currentMonthEl) {
-                        currentMonthEl.innerHTML = `
-                            <div class="stat-value">--</div>
-                            <div class="stat-range">--</div>
-                       `;
-                   }
-                   if (lastMonthEl) {
-                       lastMonthEl.innerHTML = `
-                           <div class="stat-value">--</div>
-                           <div class="stat-range">--</div>
-                       `;
-                   }
-                   return;
-               }
-
-               // Get the last two data points (current and previous month)
-               const currentMonth = filteredData[filteredData.length - 1];
-               const lastMonth = filteredData.length > 1 ? filteredData[filteredData.length - 2] : null;
-
-               // Update current month box
-               if (currentMonthEl && currentMonth) {
-                   currentMonthEl.innerHTML = `
-                       <div class="stat-period">${currentMonth.Time}</div>
-                       <div class="stat-value">${(currentMonth.RecessionRisk_p50 * 100).toFixed(1)}%</div>
-                       <div class="stat-range">[${(currentMonth.RecessionRisk_p20 * 100).toFixed(1)}% - ${(currentMonth.RecessionRisk_p80 * 100).toFixed(1)}%]</div>
-                   `;
-               }
-
-               // Update last month box
-               if (lastMonthEl) {
-                   if (lastMonth) {
-                       lastMonthEl.innerHTML = `
-                           <div class="stat-period">${lastMonth.Time}</div>
-                           <div class="stat-value">${(lastMonth.RecessionRisk_p50 * 100).toFixed(1)}%</div>
-                           <div class="stat-range">[${(lastMonth.RecessionRisk_p20 * 100).toFixed(1)}% - ${(lastMonth.RecessionRisk_p80 * 100).toFixed(1)}%]</div>
-                       `;
-                   } else {
-                       lastMonthEl.innerHTML = `
-                           <div class="stat-value">--</div>
-                           <div class="stat-range">--</div>
-                       `;
-                   }
-               }
-           }
-
-           hideLoading() {
-               document.getElementById('loading').style.display = 'none';
-               document.getElementById('chart-section').style.display = 'block';
-           }
-
-           showError(message) {
-               document.getElementById('loading').style.display = 'none';
-               const errorDiv = document.getElementById('error');
-               errorDiv.textContent = message;
-               errorDiv.style.display = 'block';
-           }
-       }
-
-       // Initialize when page loads
-       document.addEventListener('DOMContentLoaded', () => {
-           new RecessionRiskVisualizer();
-       });
-   </script>
+    </script>
 </body>
 </html>
