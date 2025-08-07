@@ -596,11 +596,13 @@
                 const selection = chart.timeSelection;
                 let isMouseDown = false;
                 
+                // Remove any existing listeners first
                 canvas.removeEventListener('mousedown', canvas._chartMouseDown);
-                canvas.removeEventListener('mousemove', canvas._chartMouseMove);
-                canvas.removeEventListener('mouseup', canvas._chartMouseUp);
+                document.removeEventListener('mousemove', canvas._chartMouseMove);
+                document.removeEventListener('mouseup', canvas._chartMouseUp);
                 canvas.removeEventListener('mouseleave', canvas._chartMouseLeave);
                 
+                // Create bound functions so we can remove them later
                 canvas._chartMouseDown = (e) => {
                     console.log('🖱️ Canvas mousedown detected!');
                     const rect = canvas.getBoundingClientRect();
@@ -616,18 +618,23 @@
                     e.preventDefault();
                 };
                 
+                // Move mousemove to document level so it works outside canvas
                 canvas._chartMouseMove = (e) => {
                     if (isMouseDown && selection.isSelecting) {
                         const rect = canvas.getBoundingClientRect();
                         const x = e.clientX - rect.left;
                         
-                        selection.endX = x;
-                        console.log('🚀 Dragging to x:', x);
+                        // Clamp x to canvas boundaries
+                        const clampedX = Math.max(0, Math.min(x, rect.width));
+                        
+                        selection.endX = clampedX;
+                        console.log('🚀 Dragging to x:', clampedX);
                         chart.update('none');
                         e.preventDefault();
                     }
                 };
                 
+                // Move mouseup to document level so it works outside canvas
                 canvas._chartMouseUp = (e) => {
                     if (isMouseDown && selection.isSelecting) {
                         console.log('🏁 Selection complete!');
@@ -640,19 +647,14 @@
                 };
                 
                 canvas._chartMouseLeave = (e) => {
-                    if (isMouseDown) {
-                        console.log('🚪 Mouse left canvas - ending selection');
-                        isMouseDown = false;
-                        selection.isSelecting = false;
-                        selection.startX = null;
-                        selection.endX = null;
-                        chart.update('none');
-                    }
+                    // Don't end selection when mouse leaves - keep dragging active
+                    console.log('🚪 Mouse left canvas - continuing selection');
                 };
                 
+                // Add the event listeners
                 canvas.addEventListener('mousedown', canvas._chartMouseDown);
-                canvas.addEventListener('mousemove', canvas._chartMouseMove);
-                canvas.addEventListener('mouseup', canvas._chartMouseUp);
+                document.addEventListener('mousemove', canvas._chartMouseMove); // Document level!
+                document.addEventListener('mouseup', canvas._chartMouseUp);     // Document level!
                 canvas.addEventListener('mouseleave', canvas._chartMouseLeave);
             },
             
@@ -662,11 +664,15 @@
                 
                 const chartLeft = xScale.left;
                 const chartRight = xScale.right;
+                const chartWidth = chartRight - chartLeft;
                 
-                if (x < chartLeft || x > chartRight) return null;
+                // Don't return null for coordinates outside bounds - clamp them instead
+                const clampedX = Math.max(chartLeft, Math.min(x, chartRight));
                 
-                const relativeX = (x - chartLeft) / (chartRight - chartLeft);
+                const relativeX = (clampedX - chartLeft) / chartWidth;
                 const filteredData = chart.config._config.filteredData || [];
+                
+                if (filteredData.length === 0) return null;
                 
                 const dataIndex = Math.round(relativeX * (filteredData.length - 1));
                 return Math.max(0, Math.min(dataIndex, filteredData.length - 1));
@@ -675,37 +681,53 @@
             applySelection(chart) {
                 const selection = chart.timeSelection;
                 if (selection.startX !== null && selection.endX !== null) {
-                    const startIndex = this.getDataIndexFromX(chart, selection.startX);
-                    const endIndex = this.getDataIndexFromX(chart, selection.endX);
+                    // Get canvas boundaries for proper clamping
+                    const canvas = chart.canvas;
+                    const rect = canvas.getBoundingClientRect();
                     
+                    // Clamp selection coordinates to canvas boundaries
+                    const clampedStartX = Math.max(0, Math.min(selection.startX, rect.width));
+                    const clampedEndX = Math.max(0, Math.min(selection.endX, rect.width));
+                    
+                    const startIndex = this.getDataIndexFromX(chart, clampedStartX);
+                    const endIndex = this.getDataIndexFromX(chart, clampedEndX);
+                    
+                    console.log('📊 Clamped coordinates:', clampedStartX, 'to', clampedEndX);
                     console.log('📊 Relative indices in current view:', startIndex, 'to', endIndex);
                     
                     if (startIndex !== null && endIndex !== null && startIndex !== endIndex) {
                         const startIdx = Math.min(startIndex, endIndex);
                         const endIdx = Math.max(startIndex, endIndex);
                         
+                        // Get current slider positions (these represent absolute indices in full dataset)
                         const currentStartIndex = parseInt(document.getElementById('time-range-start').value);
                         const currentEndIndex = parseInt(document.getElementById('time-range-end').value);
                         
+                        // Calculate how the selection maps to the current visible range
                         const currentRangeSize = currentEndIndex - currentStartIndex;
-                        const selectionStartRatio = startIdx / (chart.config._config.filteredData.length - 1);
-                        const selectionEndRatio = endIdx / (chart.config._config.filteredData.length - 1);
+                        const filteredDataLength = chart.config._config.filteredData?.length || 1;
+                        const selectionStartRatio = startIdx / Math.max(1, filteredDataLength - 1);
+                        const selectionEndRatio = endIdx / Math.max(1, filteredDataLength - 1);
                         
+                        // Map to absolute indices
                         const absoluteStartIdx = currentStartIndex + Math.round(selectionStartRatio * currentRangeSize);
                         const absoluteEndIdx = currentStartIndex + Math.round(selectionEndRatio * currentRangeSize);
                         
                         console.log('🎯 Current range:', currentStartIndex, 'to', currentEndIndex);
                         console.log('🎯 New absolute range:', absoluteStartIdx, 'to', absoluteEndIdx);
                         
+                        // Ensure valid range
                         const maxIndex = parseInt(document.getElementById('time-range-end').max);
                         const finalStartIdx = Math.max(0, Math.min(absoluteStartIdx, maxIndex - 1));
                         const finalEndIdx = Math.max(finalStartIdx + 1, Math.min(absoluteEndIdx, maxIndex));
                         
                         console.log('🎯 Final range:', finalStartIdx, 'to', finalEndIdx);
                         
+                        // Update sliders
                         document.getElementById('time-range-start').value = finalStartIdx;
                         document.getElementById('time-range-end').value = finalEndIdx;
                         
+                        // Update the visualization
                         const visualizer = chart.config._config.visualizer;
                         if (visualizer) {
                             visualizer.updateRangeLabels();
@@ -720,11 +742,12 @@
             },
             
             beforeDestroy(chart) {
+                // Clean up event listeners when chart is destroyed
                 const canvas = chart.canvas;
                 if (canvas && chart.timeSelection.eventsAttached) {
                     canvas.removeEventListener('mousedown', canvas._chartMouseDown);
-                    canvas.removeEventListener('mousemove', canvas._chartMouseMove);
-                    canvas.removeEventListener('mouseup', canvas._chartMouseUp);
+                    document.removeEventListener('mousemove', canvas._chartMouseMove); // Document level!
+                    document.removeEventListener('mouseup', canvas._chartMouseUp);     // Document level!
                     canvas.removeEventListener('mouseleave', canvas._chartMouseLeave);
                     chart.timeSelection.eventsAttached = false;
                 }
