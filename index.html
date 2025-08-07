@@ -1562,88 +1562,103 @@
                this.showStats();
            }
 
-           showStats() {
-               const filteredData = this.getFilteredData();
-               const currentMonthEl = document.getElementById('current-month-stat');
-               const lastMonthEl = document.getElementById('last-month-stat');
-               
-               if (!filteredData || filteredData.length === 0) {
-                   if (currentMonthEl) {
-                       currentMonthEl.innerHTML = `<div class="stat-value">--</div><div class="stat-range">--</div>`;
-                   }
-                   if (lastMonthEl) {
-                       lastMonthEl.innerHTML = `<div class="stat-value">--</div><div class="stat-range">--</div>`;
-                   }
-                   return;
-               }
+            showStats() {
+                // Get the full dataset (not filtered by time range) to find the latest available data
+                const allTimePoints = this.getAllTimePoints();
+                if (allTimePoints.length === 0) {
+                    // Handle empty case
+                    const currentMonthEl = document.getElementById('current-month-stat');
+                    const lastMonthEl = document.getElementById('last-month-stat');
+                    if (currentMonthEl) {
+                        currentMonthEl.innerHTML = `<div class="stat-value">--</div><div class="stat-range">--</div>`;
+                    }
+                    if (lastMonthEl) {
+                        lastMonthEl.innerHTML = `<div class="stat-value">--</div><div class="stat-range">--</div>`;
+                    }
+                    return;
+                }
 
-               const currentMonth = filteredData[filteredData.length - 1];
-               const lastMonth = filteredData.length > 1 ? filteredData[filteredData.length - 2] : null;
+                // Get the latest available data points (not filtered by time selection)
+                const latestTimePoints = allTimePoints.slice(-2); // Get last 2 time points
+                const latestDataPoints = latestTimePoints.map(timePoint => {
+                    const dataPoint = { Time: timePoint };
+                    this.selectedCountries.forEach(country => {
+                        const countryData = this.countryData[country]?.data.find(row => row.Time === timePoint);
+                        dataPoint[country] = countryData || null;
+                    });
+                    return dataPoint;
+                });
 
-               if (this.selectedCountries.length === 1) {
-                   // Single country stats
-                   const country = this.selectedCountries[0];
-                   const currentData = currentMonth[country];
-                   const lastData = lastMonth ? lastMonth[country] : null;
+                const currentMonth = latestDataPoints[latestDataPoints.length - 1];
+                const lastMonth = latestDataPoints.length > 1 ? latestDataPoints[latestDataPoints.length - 2] : null;
 
-                   if (currentMonthEl && currentData) {
-                       currentMonthEl.innerHTML = `
-                           <div class="stat-period">${currentMonth.Time}</div>
-                           <div class="stat-value">${(currentData.RecessionRisk_p50 * 100).toFixed(1)}%</div>
-                           <div class="stat-range">[${(currentData.RecessionRisk_p20 * 100).toFixed(1)}% - ${(currentData.RecessionRisk_p80 * 100).toFixed(1)}%]</div>
-                       `;
-                   }
+                const currentMonthEl = document.getElementById('current-month-stat');
+                const lastMonthEl = document.getElementById('last-month-stat');
 
-                   if (lastMonthEl) {
-                       if (lastData) {
-                           lastMonthEl.innerHTML = `
-                               <div class="stat-period">${lastMonth.Time}</div>
-                               <div class="stat-value">${(lastData.RecessionRisk_p50 * 100).toFixed(1)}%</div>
-                               <div class="stat-range">[${(lastData.RecessionRisk_p20 * 100).toFixed(1)}% - ${(lastData.RecessionRisk_p80 * 100).toFixed(1)}%]</div>
-                           `;
-                       } else {
-                           lastMonthEl.innerHTML = `<div class="stat-value">--</div><div class="stat-range">--</div>`;
-                       }
-                   }
-               } else {
-                   // Multiple countries stats
-                   if (currentMonthEl) {
-                       let html = `<div class="stat-period">${currentMonth.Time}</div><div class="multi-country-stats">`;
-                       this.selectedCountries.forEach(country => {
-                           const data = currentMonth[country];
-                           if (data) {
-                               html += `
-                                   <div class="country-stat-row">
-                                       <span class="country-name">${this.countryLabels[country]}</span>
-                                       <span class="country-value">${(data.RecessionRisk_p50 * 100).toFixed(1)}%</span>
-                                   </div>
-                               `;
-                           }
-                       });
-                       html += '</div>';
-                       currentMonthEl.innerHTML = html;
-                   }
+                if (this.selectedCountries.length === 1) {
+                    // Single country stats
+                    const country = this.selectedCountries[0];
+                    const currentData = currentMonth[country];
+                    const lastData = lastMonth ? lastMonth[country] : null;
 
-                   if (lastMonthEl && lastMonth) {
-                       let html = `<div class="stat-period">${lastMonth.Time}</div><div class="multi-country-stats">`;
-                       this.selectedCountries.forEach(country => {
-                           const data = lastMonth[country];
-                           if (data) {
-                               html += `
-                                   <div class="country-stat-row">
-                                       <span class="country-name">${this.countryLabels[country]}</span>
-                                       <span class="country-value">${(data.RecessionRisk_p50 * 100).toFixed(1)}%</span>
-                                   </div>
-                               `;
-                           }
-                       });
-                       html += '</div>';
-                       lastMonthEl.innerHTML = html;
-                   } else if (lastMonthEl) {
-                       lastMonthEl.innerHTML = `<div class="stat-value">--</div><div class="stat-range">--</div>`;
-                   }
-               }
-           }
+                    if (currentMonthEl && currentData) {
+                        currentMonthEl.innerHTML = `
+                            <div class="stat-period">${currentMonth.Time}</div>
+                            <div class="stat-value">${(currentData.RecessionRisk_p50 * 100).toFixed(1)}%</div>
+                            <div class="stat-range">[${(currentData.RecessionRisk_p20 * 100).toFixed(1)}% - ${(currentData.RecessionRisk_p80 * 100).toFixed(1)}%]</div>
+                        `;
+                    }
+
+                    if (lastMonthEl) {
+                        if (lastData) {
+                            lastMonthEl.innerHTML = `
+                                <div class="stat-period">${lastMonth.Time}</div>
+                                <div class="stat-value">${(lastData.RecessionRisk_p50 * 100).toFixed(1)}%</div>
+                                <div class="stat-range">[${(lastData.RecessionRisk_p20 * 100).toFixed(1)}% - ${(lastData.RecessionRisk_p80 * 100).toFixed(1)}%]</div>
+                            `;
+                        } else {
+                            lastMonthEl.innerHTML = `<div class="stat-value">--</div><div class="stat-range">--</div>`;
+                        }
+                    }
+                } else {
+                    // Multiple countries stats
+                    if (currentMonthEl) {
+                        let html = `<div class="stat-period">${currentMonth.Time}</div><div class="multi-country-stats">`;
+                        this.selectedCountries.forEach(country => {
+                            const data = currentMonth[country];
+                            if (data) {
+                                html += `
+                                    <div class="country-stat-row">
+                                        <span class="country-name">${this.countryLabels[country]}</span>
+                                        <span class="country-value">${(data.RecessionRisk_p50 * 100).toFixed(1)}%</span>
+                                    </div>
+                                `;
+                            }
+                        });
+                        html += '</div>';
+                        currentMonthEl.innerHTML = html;
+                    }
+
+                    if (lastMonthEl && lastMonth) {
+                        let html = `<div class="stat-period">${lastMonth.Time}</div><div class="multi-country-stats">`;
+                        this.selectedCountries.forEach(country => {
+                            const data = lastMonth[country];
+                            if (data) {
+                                html += `
+                                    <div class="country-stat-row">
+                                        <span class="country-name">${this.countryLabels[country]}</span>
+                                        <span class="country-value">${(data.RecessionRisk_p50 * 100).toFixed(1)}%</span>
+                                    </div>
+                                `;
+                            }
+                        });
+                        html += '</div>';
+                        lastMonthEl.innerHTML = html;
+                    } else if (lastMonthEl) {
+                        lastMonthEl.innerHTML = `<div class="stat-value">--</div><div class="stat-range">--</div>`;
+                    }
+                }
+            }
 
            hideLoading() {
                document.getElementById('loading').style.display = 'none';
