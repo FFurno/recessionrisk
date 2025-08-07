@@ -415,6 +415,108 @@
             font-weight: 700;
         }
 
+/* Tab Navigation Styling */
+        .tab-navigation {
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: left;
+            gap: 0;
+        }
+
+        .tab-button {
+            background: transparent;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: #6c757d;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .tab-button:hover {
+            background: rgba(0, 114, 189, 0.05);
+            color: #0072bd;
+        }
+
+        .tab-button.active {
+            color: #0072bd;
+            border-bottom-color: #0072bd;
+            background: rgba(0, 114, 189, 0.08);
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* FAQ Specific Styling */
+        .faq-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px;
+        }
+
+        .faq-section {
+            margin-bottom: 40px;
+        }
+
+        .faq-section h2 {
+            color: #343a40;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #0072bd;
+            padding-bottom: 10px;
+        }
+
+        .faq-item {
+            margin-bottom: 25px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            border-left: 4px solid #0072bd;
+        }
+
+        .faq-question {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .faq-answer {
+            color: #6c757d;
+            line-height: 1.6;
+        }
+
+        .faq-answer p {
+            margin-bottom: 10px;
+        }
+
+        .faq-answer ul {
+            margin-left: 20px;
+            margin-bottom: 10px;
+        }
+
+        /* Responsive tabs */
+        @media (max-width: 768px) {
+            .tab-button {
+                padding: 12px 20px;
+                font-size: 0.9rem;
+            }
+        }
+
         /* Responsive design */
         @media (max-width: 1200px) {
             .control-panel {
@@ -449,8 +551,16 @@
             <p>Based on "<a href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4706700" style="color: #adb5bd; text-decoration: none;">Nowcasting Recession Risk</a>", by Furno, Giannone (2024)</p>
         </div>
         
+        <!-- Add Tab Navigation -->
+        <div class="tab-navigation">
+            <button class="tab-button active" data-tab="dashboard">Nowcast</button>
+            <button class="tab-button" data-tab="faq">FAQ</button>
+        </div>
+
         <div class="content">
-            <div id="loading" class="loading">
+            <!-- Dashboard Tab Content -->
+            <div id="dashboard-tab" class="tab-content active">
+                <div id="loading" class="loading">
                 <div class="loading-spinner"></div>
                 <p>Processing recession risk data...</p>
             </div>
@@ -556,6 +666,23 @@
                     </div>
                 </div>
             </div>
+
+            <!-- FAQ Tab Content -->
+            <div id="faq-tab" class="tab-content">
+                <div class="faq-container">
+                    <div class="faq-section">
+                        <h2>Model Methodology</h2>
+                        
+                        <div class="faq-item">
+                            <div class="faq-question">What is the recession risk model?</div>
+                            <div class="faq-answer">
+                                <p>This model provides real-time estimates of recession probability based on the methodology developed by Furno and Giannone (2024).</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -1672,8 +1799,30 @@
                errorDiv.style.display = 'block';
            }
        }
+       
+       // Tab switching functionality
+       function initializeTabs() {
+           const tabButtons = document.querySelectorAll('.tab-button');
+           const tabContents = document.querySelectorAll('.tab-content');
+           
+           tabButtons.forEach(button => {
+               button.addEventListener('click', () => {
+                   const targetTab = button.getAttribute('data-tab');
+                   
+                   // Remove active class from all tabs and buttons
+                   tabButtons.forEach(btn => btn.classList.remove('active'));
+                   tabContents.forEach(content => content.classList.remove('active'));
+                   
+                   // Add active class to clicked button and corresponding content
+                   button.classList.add('active');
+                   document.getElementById(`${targetTab}-tab`).classList.add('active');
+               });
+           });
+       }
 
+       // Initialize tabs when DOM is ready
        document.addEventListener('DOMContentLoaded', () => {
+           initializeTabs();
            new RecessionRiskVisualizer();
        });
    </script>
