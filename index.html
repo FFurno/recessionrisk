@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recession Risk Visualization</title>
+    <title>Recession Risk Nowcast</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <style>
@@ -94,22 +94,103 @@
             color: #212529;
         }
 
-        /* Country selector specific styling */
-        .country-select {
+        /* Fix z-index stacking for dropdown */
+        .control-panel > .control-box:has(.country-dropdown) {
+            z-index: 1000;
+            position: relative;
+        }
+
+        /* Alternative for browsers that don't support :has() */
+        .control-box {
+            position: relative;
+        }
+
+        .control-box:first-child {
+            z-index: 1000;
+        }
+
+        /* Country dropdown styling */
+        .country-dropdown {
+            position: relative;
             width: 100%;
+            z-index: 1000;
+        }
+
+        .dropdown-selected {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             padding: 8px 12px;
             border: 2px solid #dee2e6;
             border-radius: 6px;
-            font-size: 0.95rem;
             background: white;
             cursor: pointer;
+            font-size: 0.95rem;
             transition: all 0.3s ease;
+            position: relative;
+            z-index: 1001;
         }
 
-        .country-select:focus {
-            outline: none;
+        .dropdown-selected:hover {
+            border-color: #0072bd;
+        }
+
+        .dropdown-selected.open {
             border-color: #0072bd;
             box-shadow: 0 0 0 3px rgba(0, 114, 189, 0.1);
+            border-radius: 6px 6px 0 0;
+        }
+
+        .dropdown-selected svg {
+            transition: transform 0.3s ease;
+        }
+
+        .dropdown-selected.open svg {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 2px solid #0072bd;
+            border-top: none;
+            border-radius: 0 0 6px 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 9999;  /* Much higher z-index */
+            max-height: 250px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+        }
+        .dropdown-menu label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .dropdown-menu label:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-menu label:hover {
+            background-color: rgba(0, 114, 189, 0.1);
+        }
+
+        .dropdown-menu input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: #0072bd;
         }
 
         /* Stats box specific styling */
@@ -129,6 +210,35 @@
             font-size: 0.9rem;
             color: #495057;
             margin-bottom: 8px;
+        }
+
+        .multi-country-stats {
+            max-height: 120px;
+            overflow-y: auto;
+            text-align: left;
+        }
+
+        .country-stat-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 4px 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .country-stat-row:last-child {
+            border-bottom: none;
+        }
+
+        .country-name {
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .country-value {
+            font-weight: 700;
+            color: #0072bd;
+            font-size: 0.9rem;
         }
 
         /* Download button styling */
@@ -352,16 +462,24 @@
                 <div class="control-panel">
                     <!-- Country Selection Box -->
                     <div class="control-box">
-                        <div class="control-box-title">Country</div>
+                        <div class="control-box-title">Countries</div>
                         <div class="control-box-content">
-                            <select id="country-select" class="country-select">
-                                <option value="US" selected>United States</option>
-                                <option value="EA">Euro Area</option>
-                                <option value="DE">Germany</option>
-                                <option value="FRA">France</option>
-                                <option value="SPA">Spain</option>
-                                <option value="ITA">Italy</option>
-                            </select>
+                            <div class="country-dropdown">
+                                <div class="dropdown-selected" id="country-dropdown-selected">
+                                    <span id="selected-count">1 selected</span>
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="6,9 12,15 18,9"></polyline>
+                                    </svg>
+                                </div>
+                                <div class="dropdown-menu" id="country-dropdown-menu">
+                                    <label><input type="checkbox" value="US" checked> United States</label>
+                                    <label><input type="checkbox" value="EA"> Euro Area</label>
+                                    <label><input type="checkbox" value="DE"> Germany</label>
+                                    <label><input type="checkbox" value="FRA"> France</label>
+                                    <label><input type="checkbox" value="SPA"> Spain</label>
+                                    <label><input type="checkbox" value="ITA"> Italy</label>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -455,12 +573,11 @@
                     isSelecting: false,
                     startX: null,
                     endX: null,
-                    eventsAttached: false  // ← Track if events are already attached
+                    eventsAttached: false
                 };
             },
             
             afterInit(chart) {
-                // Only attach events once, after chart is fully initialized
                 if (!chart.timeSelection.eventsAttached) {
                     this.setupCanvasEvents(chart);
                     chart.timeSelection.eventsAttached = true;
@@ -479,13 +596,11 @@
                 const selection = chart.timeSelection;
                 let isMouseDown = false;
                 
-                // Remove any existing listeners first
                 canvas.removeEventListener('mousedown', canvas._chartMouseDown);
                 canvas.removeEventListener('mousemove', canvas._chartMouseMove);
                 canvas.removeEventListener('mouseup', canvas._chartMouseUp);
                 canvas.removeEventListener('mouseleave', canvas._chartMouseLeave);
                 
-                // Create bound functions so we can remove them later
                 canvas._chartMouseDown = (e) => {
                     console.log('🖱️ Canvas mousedown detected!');
                     const rect = canvas.getBoundingClientRect();
@@ -535,7 +650,6 @@
                     }
                 };
                 
-                // Add the event listeners
                 canvas.addEventListener('mousedown', canvas._chartMouseDown);
                 canvas.addEventListener('mousemove', canvas._chartMouseMove);
                 canvas.addEventListener('mouseup', canvas._chartMouseUp);
@@ -570,34 +684,28 @@
                         const startIdx = Math.min(startIndex, endIndex);
                         const endIdx = Math.max(startIndex, endIndex);
                         
-                        // Get current slider positions (these represent absolute indices in full dataset)
                         const currentStartIndex = parseInt(document.getElementById('time-range-start').value);
                         const currentEndIndex = parseInt(document.getElementById('time-range-end').value);
                         
-                        // Calculate how the selection maps to the current visible range
                         const currentRangeSize = currentEndIndex - currentStartIndex;
                         const selectionStartRatio = startIdx / (chart.config._config.filteredData.length - 1);
                         const selectionEndRatio = endIdx / (chart.config._config.filteredData.length - 1);
                         
-                        // Map to absolute indices
                         const absoluteStartIdx = currentStartIndex + Math.round(selectionStartRatio * currentRangeSize);
                         const absoluteEndIdx = currentStartIndex + Math.round(selectionEndRatio * currentRangeSize);
                         
                         console.log('🎯 Current range:', currentStartIndex, 'to', currentEndIndex);
                         console.log('🎯 New absolute range:', absoluteStartIdx, 'to', absoluteEndIdx);
                         
-                        // Ensure valid range
                         const maxIndex = parseInt(document.getElementById('time-range-end').max);
                         const finalStartIdx = Math.max(0, Math.min(absoluteStartIdx, maxIndex - 1));
                         const finalEndIdx = Math.max(finalStartIdx + 1, Math.min(absoluteEndIdx, maxIndex));
                         
                         console.log('🎯 Final range:', finalStartIdx, 'to', finalEndIdx);
                         
-                        // Update sliders
                         document.getElementById('time-range-start').value = finalStartIdx;
                         document.getElementById('time-range-end').value = finalEndIdx;
                         
-                        // Update the visualization
                         const visualizer = chart.config._config.visualizer;
                         if (visualizer) {
                             visualizer.updateRangeLabels();
@@ -612,7 +720,6 @@
             },
             
             beforeDestroy(chart) {
-                // Clean up event listeners when chart is destroyed
                 const canvas = chart.canvas;
                 if (canvas && chart.timeSelection.eventsAttached) {
                     canvas.removeEventListener('mousedown', canvas._chartMouseDown);
@@ -648,10 +755,9 @@
 
         class RecessionRiskVisualizer {
             constructor() {
-                this.data = null;
+                this.countryData = {};
                 this.chart = null;
-                this.currentCountry = 'US';
-                this.csvData = null;
+                this.selectedCountries = ['US'];
                 this.lastModified = null;
                 this.countryLabels = {
                     'DE': 'Germany',
@@ -661,14 +767,21 @@
                     'SPA': 'Spain',
                     'ITA': 'Italy'
                 };
+                this.countryColors = {
+                    'US': '#0072bd',
+                    'EA': '#d95319',
+                    'DE': '#edb120',
+                    'FRA': '#7e2f8e',
+                    'SPA': '#77ac30',
+                    'ITA': '#a2142f'
+                };
                 this.init();
             }
 
             async init() {
                 try {
-                    await this.loadCountryData();
                     await this.loadMetaData();
-                    this.processData();
+                    await this.loadSelectedCountries();
                     this.setupControls();
                     this.createChart();
                     this.showStats();
@@ -679,12 +792,16 @@
                 }
             }
 
-            async loadCountryData() {
+            async loadCountryData(countryCode) {
+                if (this.countryData[countryCode]) {
+                    return this.countryData[countryCode];
+                }
+
                 try {
-                    const fileName = `recessionrisk_${this.currentCountry}.csv`;
+                    const fileName = `recessionrisk_${countryCode}.csv`;
                     const response = await fetch(fileName);
                     if (!response.ok) {
-                        throw new Error(`Could not load ${fileName}. Make sure the CSV file is in the same folder as this HTML file.`);
+                        throw new Error(`Could not load ${fileName}`);
                     }
                     const csvText = await response.text();
                     
@@ -699,10 +816,12 @@
                                 } else if (!results.data || results.data.length === 0) {
                                     reject(new Error('No data found in CSV file'));
                                 } else {
-                                    this.data = results.data;
-                                    this.csvData = csvText;
-                                    this.lastModified = new Date();
-                                    resolve();
+                                    const processedData = this.processCountryData(results.data);
+                                    this.countryData[countryCode] = {
+                                        data: processedData,
+                                        csvText: csvText
+                                    };
+                                    resolve(processedData);
                                 }
                             },
                             error: (error) => {
@@ -711,470 +830,748 @@
                         });
                     });
                 } catch (error) {
-                    throw new Error(`Failed to load CSV file: ${error.message}`);
-                }
-            }
-            
-            async loadMetaData() {
-                try {
-                    const metaResponse = await fetch('metadata.json');
-                    if (metaResponse.ok) {
-                        const metadata = await metaResponse.json();
-                        this.lastModified = new Date(metadata.last_updated);
-                    } else {
-                        // Fallback to current date if metadata file doesn't exist
-                        console.warn('metadata.json not found, using current date');
-                        this.lastModified = new Date();
-                    }
-                } catch (metaError) {
-                    console.warn('Could not load metadata.json, using current date:', metaError);
-                    this.lastModified = new Date();
-                }
-            }
-            
-            processData() {
-                // Convert dates
-                this.data.forEach(row => {
-                    row.parsedDate = new Date(row.Time + ", 2000").getTime();
-                    const year = row.Time.includes("198") ? parseInt(row.Time.match(/\d{4}/)?.[0]) || 1980 :
-                                row.Time.includes("199") ? parseInt(row.Time.match(/\d{4}/)?.[0]) || 1990 :
-                                row.Time.includes("200") ? parseInt(row.Time.match(/\d{4}/)?.[0]) || 2000 :
-                                row.Time.includes("201") ? parseInt(row.Time.match(/\d{4}/)?.[0]) || 2010 :
-                                row.Time.includes("202") ? parseInt(row.Time.match(/\d{4}/)?.[0]) || 2020 : 2020;
-                    
-                    const month = row.Time.split(" ")[0];
-                    row.parsedDate = new Date(`${month} 1, ${year}`);
-                });
-
-                this.data.sort((a, b) => a.parsedDate - b.parsedDate);
-                this.columns = ['RecessionRisk_p50', 'RecessionRisk_p20', 'RecessionRisk_p80'];
-            }
-
-            setupControls() {
-                document.getElementById('time-range-start').addEventListener('input', () => this.handleRangeChange());
-                document.getElementById('time-range-end').addEventListener('input', () => this.handleRangeChange());
-                document.getElementById('country-select').addEventListener('change', () => this.handleCountryChange());
-                document.getElementById('download-btn').addEventListener('click', () => this.downloadCSV());
-                
-                this.updateRangeSliders();
-            }
-
-            async handleCountryChange() {
-                const newCountry = document.getElementById('country-select').value;
-                if (newCountry !== this.currentCountry) {
-                    this.currentCountry = newCountry;
-                    
-                    try {
-                        await this.loadCountryData();
-                        this.processData();
-                        this.updateRangeSliders();
-                        this.updateChart();
-                        this.showStats();
-                    } catch (error) {
-                        this.showError(`Failed to load data for selected country: ${error.message}`);
-                    }
+                    console.warn(`Failed to load data for ${countryCode}:`, error);
+                    return null;
                 }
             }
 
-            downloadCSV() {
-                if (!this.csvData) {
-                    this.csvData = this.generateCSVContent();
-                }
+            processCountryData(data) {
+               data.forEach(row => {
+                   const year = row.Time.includes("198") ? parseInt(row.Time.match(/\d{4}/)?.[0]) || 1980 :
+                               row.Time.includes("199") ? parseInt(row.Time.match(/\d{4}/)?.[0]) || 1990 :
+                               row.Time.includes("200") ? parseInt(row.Time.match(/\d{4}/)?.[0]) || 2000 :
+                               row.Time.includes("201") ? parseInt(row.Time.match(/\d{4}/)?.[0]) || 2010 :
+                               row.Time.includes("202") ? parseInt(row.Time.match(/\d{4}/)?.[0]) || 2020 : 2020;
+                   
+                   const month = row.Time.split(" ")[0];
+                   row.parsedDate = new Date(`${month} 1, ${year}`);
+               });
 
-                const countryLabel = this.countryLabels[this.currentCountry] || 'data';
-                const filename = `recession_risk_${countryLabel.replace(/\s+/g, '_')}.csv`;
-                const blob = new Blob([this.csvData], { type: 'text/csv;charset=utf-8;' });
-                const link = document.createElement('a');
-                
-                if (link.download !== undefined) {
-                    const url = URL.createObjectURL(blob);
-                    link.setAttribute('href', url);
-                    link.setAttribute('download', filename);
-                    link.style.visibility = 'hidden';
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                }
-            }
+               return data.sort((a, b) => a.parsedDate - b.parsedDate);
+           }
 
-            generateCSVContent() {
-                        if (!this.data || this.data.length === 0) {
-                            return 'Time,RecessionRisk_p50,RecessionRisk_p20,RecessionRisk_p80,recession\n';
-                        }
-                        
-                        let csv = 'Time,RecessionRisk_p50,RecessionRisk_p20,RecessionRisk_p80,recession\n';
-                        
-                        this.data.forEach(row => {
-                            csv += `${row.Time || ''},${row.RecessionRisk_p50 || ''},${row.RecessionRisk_p20 || ''},${row.RecessionRisk_p80 || ''},${row.recession || ''}\n`;
-                        });
-                        
-                        return csv;
-                    }
+           async loadSelectedCountries() {
+               const loadPromises = this.selectedCountries.map(country => this.loadCountryData(country));
+               const results = await Promise.allSettled(loadPromises);
+               
+               // Remove countries that failed to load
+               this.selectedCountries = this.selectedCountries.filter((country, index) => 
+                   results[index].status === 'fulfilled' && results[index].value !== null
+               );
 
-                    updateLastModified() {
-                        const lastUpdatedEl = document.getElementById('last-updated-text');
-                        if (this.lastModified && lastUpdatedEl) {
-                            const options = { 
-                                year: 'numeric', 
-                                month: 'short', 
-                                day: 'numeric',
-                                hour: '2-digit',
-                                minute: '2-digit',
-                                timeZoneName: 'short'
-                            };
-                            const formattedDate = this.lastModified.toLocaleDateString('en-US', options);
-                            lastUpdatedEl.textContent = formattedDate;
-                        }
-                    }
+               if (this.selectedCountries.length === 0) {
+                   throw new Error('No country data could be loaded');
+               }
+           }
+           
+           async loadMetaData() {
+               try {
+                   const metaResponse = await fetch('metadata.json');
+                   if (metaResponse.ok) {
+                       const metadata = await metaResponse.json();
+                       this.lastModified = new Date(metadata.last_updated);
+                   } else {
+                       console.warn('metadata.json not found, using current date');
+                       this.lastModified = new Date();
+                   }
+               } catch (metaError) {
+                   console.warn('Could not load metadata.json, using current date:', metaError);
+                   this.lastModified = new Date();
+               }
+           }
 
-                    updateVisualRange() {
-                        if (!this.data || this.data.length === 0) return;
-                        
-                        const startSlider = document.getElementById('time-range-start');
-                        const endSlider = document.getElementById('time-range-end');
-                        
-                        const startVal = parseInt(startSlider.value);
-                        const endVal = parseInt(endSlider.value);
-                        const maxVal = parseInt(startSlider.max);
-                        
-                        const startPercent = (startVal / maxVal) * 100;
-                        const endPercent = (endVal / maxVal) * 100;
-                        
-                        // Update CSS custom properties for the blue bar
-                        startSlider.style.setProperty('--start-percent', `${startPercent}%`);
-                        startSlider.style.setProperty('--end-percent', `${endPercent}%`);
-                        
-                        console.log('📊 Updating visual range:', startPercent.toFixed(1) + '%', 'to', endPercent.toFixed(1) + '%');
-                    }
+           setupControls() {
+               // Set up dropdown functionality
+               const dropdownSelected = document.getElementById('country-dropdown-selected');
+               const dropdownMenu = document.getElementById('country-dropdown-menu');
+               
+               // Toggle dropdown
+               dropdownSelected.addEventListener('click', (e) => {
+                   e.stopPropagation();
+                   dropdownSelected.classList.toggle('open');
+                   dropdownMenu.classList.toggle('show');
+               });
+               
+               // Close dropdown when clicking outside
+               document.addEventListener('click', (e) => {
+                   if (!e.target.closest('.country-dropdown')) {
+                       dropdownSelected.classList.remove('open');
+                       dropdownMenu.classList.remove('show');
+                   }
+               });
+               
+               // Prevent dropdown from closing when clicking inside menu
+               dropdownMenu.addEventListener('click', (e) => {
+                   e.stopPropagation();
+               });
 
-                    handleRangeChange() {
-                        const startSlider = document.getElementById('time-range-start');
-                        const endSlider = document.getElementById('time-range-end');
-                        
-                        let startVal = parseInt(startSlider.value);
-                        let endVal = parseInt(endSlider.value);
-                        
-                        if (startVal >= endVal) {
-                            if (startSlider === document.activeElement) {
-                                endVal = Math.min(startVal + 1, this.data.length - 1);
-                                endSlider.value = endVal;
-                            } else {
-                                startVal = Math.max(endVal - 1, 0);
-                                startSlider.value = startVal;
-                            }
-                        }
+               // Set up checkbox event listeners
+               const checkboxes = dropdownMenu.querySelectorAll('input[type="checkbox"]');
+               checkboxes.forEach(checkbox => {
+                   checkbox.addEventListener('change', () => {
+                       this.handleCountrySelectionChange();
+                       this.updateSelectedCountDisplay();
+                   });
+               });
 
-                        this.updateRangeLabels();
-                        this.updateVisualRange();
-                        this.updateChart();
-                    }
+               document.getElementById('time-range-start').addEventListener('input', () => this.handleRangeChange());
+               document.getElementById('time-range-end').addEventListener('input', () => this.handleRangeChange());
+               document.getElementById('download-btn').addEventListener('click', () => this.downloadCSV());
+               
+               this.updateRangeSliders();
+               this.updateSelectedCountDisplay();
+           }
 
-                    updateRangeSliders() {
-                        if (!this.data || this.data.length === 0) {
-                            return;
-                        }
-                        
-                        const startSlider = document.getElementById('time-range-start');
-                        const endSlider = document.getElementById('time-range-end');
-                        
-                        if (startSlider && endSlider) {
-                            startSlider.max = this.data.length - 1;
-                            endSlider.max = this.data.length - 1;
-                            endSlider.value = this.data.length - 1;
-                            
-                            this.updateRangeLabels();
-                            this.updateVisualRange();
-                        }
-                    }
+           updateSelectedCountDisplay() {
+               const checkboxes = document.querySelectorAll('#country-dropdown-menu input[type="checkbox"]');
+               const selectedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
+               const selectedCountEl = document.getElementById('selected-count');
+               
+               if (selectedCount === 1) {
+                   const selectedCheckbox = Array.from(checkboxes).find(cb => cb.checked);
+                   selectedCountEl.textContent = this.countryLabels[selectedCheckbox.value];
+               } else {
+                   selectedCountEl.textContent = `${selectedCount} selected`;
+               }
+           }
 
-                    updateRangeLabels() {
-                        if (!this.data || this.data.length === 0) {
-                            return;
-                        }
-                        
-                        const startIndex = parseInt(document.getElementById('time-range-start')?.value || 0);
-                        const endIndex = parseInt(document.getElementById('time-range-end')?.value || this.data.length - 1);
-                        
-                        const startLabel = document.getElementById('range-start-label');
-                        const endLabel = document.getElementById('range-end-label');
-                        
-                        if (startLabel && this.data[startIndex]) {
-                            startLabel.textContent = this.data[startIndex].Time || '';
-                        }
-                        if (endLabel && this.data[endIndex]) {
-                            endLabel.textContent = this.data[endIndex].Time || '';
-                        }
-                    }
+           async handleCountrySelectionChange() {
+               const checkboxes = document.querySelectorAll('#country-dropdown-menu input[type="checkbox"]');
+               const newSelection = Array.from(checkboxes)
+                   .filter(cb => cb.checked)
+                   .map(cb => cb.value);
 
-                    getFilteredData() {
-                        if (!this.data || this.data.length === 0) {
-                            return [];
-                        }
-                        
-                        const startIndex = parseInt(document.getElementById('time-range-start')?.value || 0);
-                        const endIndex = parseInt(document.getElementById('time-range-end')?.value || this.data.length - 1);
-                        
-                        return this.data.slice(startIndex, Math.min(endIndex + 1, this.data.length));
-                    }
+               if (newSelection.length === 0) {
+                   // Don't allow deselecting all countries
+                   return;
+               }
 
-                    createChart() {
-                        const ctx = document.getElementById('chart').getContext('2d');
-                        const chartData = this.prepareChartData();
+               // Load any new countries that aren't already loaded
+               const loadPromises = newSelection
+                   .filter(country => !this.countryData[country])
+                   .map(country => this.loadCountryData(country));
 
-                        if (this.chart) {
-                            this.chart.destroy();
-                        }
+               if (loadPromises.length > 0) {
+                   try {
+                       await Promise.allSettled(loadPromises);
+                   } catch (error) {
+                       console.warn('Some countries failed to load:', error);
+                   }
+               }
 
-                        this.chart = new Chart(ctx, {
-                            type: 'line',
-                            data: chartData,
-                            options: {
-                                responsive: true,
-                                maintainAspectRatio: false,
-                                plugins: {
-                                    title: {
-                                        display: true,
-                                        text: `${this.countryLabels[this.currentCountry]} - Recession Risk`,
-                                        font: { size: 18, weight: 'bold' },
-                                        color: '#333'
-                                    },
-                                    legend: {
-                                        display: false
-                                    },
-                                    tooltip: {
-                                        mode: 'index',
-                                        intersect: false,
-                                        filter: function(tooltipItem) {
-                                            return tooltipItem.datasetIndex === 1;
-                                        },
-                                        callbacks: {
-                                            label: function(context) {
-                                                const filteredData = context.chart.config._config.filteredData || [];
-                                                const dataPoint = filteredData[context.dataIndex];
-                                                if (dataPoint) {
-                                                    return [
-                                                        `Median: ${(dataPoint.RecessionRisk_p50 * 100).toFixed(1)}%`,
-                                                        `Range: ${(dataPoint.RecessionRisk_p20 * 100).toFixed(1)}% - ${(dataPoint.RecessionRisk_p80 * 100).toFixed(1)}%`
-                                                    ];
-                                                }
-                                                return `${context.dataset.label}: ${(context.parsed.y * 100).toFixed(1)}%`;
-                                            }
-                                        }
-                                    }
-                                },
-                                scales: {
-                                    x: {
-                                        display: true,
-                                        ticks: {
-                                            maxRotation: 45,
-                                            font: { size: 10 }
-                                        }
-                                    },
-                                    y: {
-                                        display: true,
-                                        title: {
-                                            display: true,
-                                            text: 'Recession Risk',
-                                            font: { size: 14, weight: 'bold' }
-                                        },
-                                        ticks: {
-                                            callback: function(value) {
-                                                return (value * 100).toFixed(0) + '%';
-                                            }
-                                        },
-                                        min: 0,
-                                        max: 1
-                                    }
-                                },
-                                interaction: {
-                                    intersect: false,
-                                    mode: 'index'
-                                },
-                                elements: {
-                                    point: {
-                                        radius: 0,
-                                        hoverRadius: 6
+               // Update selected countries to only include successfully loaded ones
+               this.selectedCountries = newSelection.filter(country => this.countryData[country]);
+
+               // Update checkboxes to reflect what actually loaded
+               checkboxes.forEach(checkbox => {
+                   if (newSelection.includes(checkbox.value) && !this.countryData[checkbox.value]) {
+                       checkbox.checked = false;
+                   }
+               });
+
+               this.updateRangeSliders();
+               this.updateChart();
+               this.showStats();
+           }
+
+           downloadCSV() {
+               if (this.selectedCountries.length === 1) {
+                   // Single country - download that country's data
+                   const country = this.selectedCountries[0];
+                   const csvData = this.countryData[country].csvText;
+                   const countryLabel = this.countryLabels[country] || country;
+                   const filename = `recession_risk_${countryLabel.replace(/\s+/g, '_')}.csv`;
+                   
+                   const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
+                   const link = document.createElement('a');
+                   
+                   if (link.download !== undefined) {
+                       const url = URL.createObjectURL(blob);
+                       link.setAttribute('href', url);
+                       link.setAttribute('download', filename);
+                       link.style.visibility = 'hidden';
+                       document.body.appendChild(link);
+                       link.click();
+                       document.body.removeChild(link);
+                   }
+               } else {
+                   // Multiple countries - create a combined CSV
+                   const combinedCSV = this.generateCombinedCSV();
+                   const filename = 'recession_risk_multiple_countries.csv';
+                   
+                   const blob = new Blob([combinedCSV], { type: 'text/csv;charset=utf-8;' });
+                   const link = document.createElement('a');
+                   
+                   if (link.download !== undefined) {
+                       const url = URL.createObjectURL(blob);
+                       link.setAttribute('href', url);
+                       link.setAttribute('download', filename);
+                       link.style.visibility = 'hidden';
+                       document.body.appendChild(link);
+                       link.click();
+                       document.body.removeChild(link);
+                   }
+               }
+           }
+
+           generateCombinedCSV() {
+               // Create a combined CSV with all selected countries
+               const filteredData = this.getFilteredData();
+               if (!filteredData || filteredData.length === 0) {
+                   return 'Time\n';
+               }
+
+               let csv = 'Time';
+               this.selectedCountries.forEach(country => {
+                   csv += `,${this.countryLabels[country]}_Risk`;
+               });
+               csv += '\n';
+
+               filteredData.forEach(dataPoint => {
+                   csv += dataPoint.Time;
+                   this.selectedCountries.forEach(country => {
+                       const countryData = dataPoint[country];
+                       const value = countryData ? (countryData.RecessionRisk_p50 * 100).toFixed(1) : '';
+                       csv += `,${value}`;
+                   });
+                   csv += '\n';
+               });
+
+               return csv;
+           }
+
+           updateLastModified() {
+               const lastUpdatedEl = document.getElementById('last-updated-text');
+               if (this.lastModified && lastUpdatedEl) {
+                   const options = { 
+                       year: 'numeric', 
+                       month: 'short', 
+                       day: 'numeric',
+                       hour: '2-digit',
+                       minute: '2-digit',
+                       timeZoneName: 'short'
+                   };
+                   const formattedDate = this.lastModified.toLocaleDateString('en-US', options);
+                   lastUpdatedEl.textContent = formattedDate;
+               }
+           }
+
+           updateVisualRange() {
+               const filteredData = this.getFilteredData();
+               if (!filteredData || filteredData.length === 0) return;
+               
+               const startSlider = document.getElementById('time-range-start');
+               const endSlider = document.getElementById('time-range-end');
+               
+               const startVal = parseInt(startSlider.value);
+               const endVal = parseInt(endSlider.value);
+               const maxVal = parseInt(startSlider.max);
+               
+               const startPercent = (startVal / maxVal) * 100;
+               const endPercent = (endVal / maxVal) * 100;
+               
+               startSlider.style.setProperty('--start-percent', `${startPercent}%`);
+               startSlider.style.setProperty('--end-percent', `${endPercent}%`);
+               
+               console.log('📊 Updating visual range:', startPercent.toFixed(1) + '%', 'to', endPercent.toFixed(1) + '%');
+           }
+
+           handleRangeChange() {
+               const startSlider = document.getElementById('time-range-start');
+               const endSlider = document.getElementById('time-range-end');
+               
+               let startVal = parseInt(startSlider.value);
+               let endVal = parseInt(endSlider.value);
+               
+               if (startVal >= endVal) {
+                   if (startSlider === document.activeElement) {
+                       endVal = Math.min(startVal + 1, this.getAllTimePoints().length - 1);
+                       endSlider.value = endVal;
+                   } else {
+                       startVal = Math.max(endVal - 1, 0);
+                       startSlider.value = startVal;
+                   }
+               }
+
+               this.updateRangeLabels();
+               this.updateVisualRange();
+               this.updateChart();
+           }
+
+           getAllTimePoints() {
+               // Get all unique time points across all selected countries
+               const allTimePoints = new Set();
+               
+               this.selectedCountries.forEach(country => {
+                   if (this.countryData[country]) {
+                       this.countryData[country].data.forEach(row => {
+                           allTimePoints.add(row.Time);
+                       });
+                   }
+               });
+
+               return Array.from(allTimePoints).sort((a, b) => {
+                   const dateA = this.parseTimeString(a);
+                   const dateB = this.parseTimeString(b);
+                   return dateA - dateB;
+               });
+           }
+
+           parseTimeString(timeStr) {
+               const year = timeStr.includes("198") ? parseInt(timeStr.match(/\d{4}/)?.[0]) || 1980 :
+                           timeStr.includes("199") ? parseInt(timeStr.match(/\d{4}/)?.[0]) || 1990 :
+                           timeStr.includes("200") ? parseInt(timeStr.match(/\d{4}/)?.[0]) || 2000 :
+                           timeStr.includes("201") ? parseInt(timeStr.match(/\d{4}/)?.[0]) || 2010 :
+                           timeStr.includes("202") ? parseInt(timeStr.match(/\d{4}/)?.[0]) || 2020 : 2020;
+               
+               const month = timeStr.split(" ")[0];
+               return new Date(`${month} 1, ${year}`);
+           }
+
+           updateRangeSliders() {
+               const allTimePoints = this.getAllTimePoints();
+               if (allTimePoints.length === 0) return;
+               
+               const startSlider = document.getElementById('time-range-start');
+               const endSlider = document.getElementById('time-range-end');
+               
+               if (startSlider && endSlider) {
+                   startSlider.max = allTimePoints.length - 1;
+                   endSlider.max = allTimePoints.length - 1;
+                   endSlider.value = allTimePoints.length - 1;
+                   
+                   this.updateRangeLabels();
+                   this.updateVisualRange();
+               }
+           }
+
+           updateRangeLabels() {
+               const allTimePoints = this.getAllTimePoints();
+               if (allTimePoints.length === 0) return;
+               
+               const startIndex = parseInt(document.getElementById('time-range-start')?.value || 0);
+               const endIndex = parseInt(document.getElementById('time-range-end')?.value || allTimePoints.length - 1);
+               
+               const startLabel = document.getElementById('range-start-label');
+               const endLabel = document.getElementById('range-end-label');
+               
+               if (startLabel && allTimePoints[startIndex]) {
+                   startLabel.textContent = allTimePoints[startIndex];
+               }
+               if (endLabel && allTimePoints[endIndex]) {
+                   endLabel.textContent = allTimePoints[endIndex];
+               }
+           }
+
+           getFilteredData() {
+               const allTimePoints = this.getAllTimePoints();
+               if (allTimePoints.length === 0) return [];
+               
+               const startIndex = parseInt(document.getElementById('time-range-start')?.value || 0);
+               const endIndex = parseInt(document.getElementById('time-range-end')?.value || allTimePoints.length - 1);
+               
+               const selectedTimePoints = allTimePoints.slice(startIndex, Math.min(endIndex + 1, allTimePoints.length));
+               
+               // Create combined data structure
+               return selectedTimePoints.map(timePoint => {
+                   const dataPoint = { Time: timePoint };
+                   
+                   this.selectedCountries.forEach(country => {
+                       const countryData = this.countryData[country]?.data.find(row => row.Time === timePoint);
+                       dataPoint[country] = countryData || null;
+                   });
+                   
+                   return dataPoint;
+               });
+           }
+
+           createChart() {
+               const ctx = document.getElementById('chart').getContext('2d');
+               const chartData = this.prepareChartData();
+
+               if (this.chart) {
+                   this.chart.destroy();
+               }
+
+               const isSingleCountry = this.selectedCountries.length === 1;
+
+               this.chart = new Chart(ctx, {
+                   type: 'line',
+                   data: chartData,
+                   options: {
+                       responsive: true,
+                       maintainAspectRatio: false,
+                       plugins: {
+                           title: {
+                               display: true,
+                               text: isSingleCountry 
+                                   ? `Recession Risk - ${this.countryLabels[this.selectedCountries[0]]}`
+                                   : 'Recession Risk - Comparison',
+                               font: { size: 18, weight: 'bold' },
+                               color: '#333'
+                           },
+                            legend: {
+                                display: !isSingleCountry,
+                                position: 'top',
+                                labels: {
+                                    usePointStyle: true,
+                                    padding: 20,
+                                    filter: function(legendItem) {
+                                        // Only show median lines in legend for multiple countries
+                                        return !legendItem.text.includes('Upper') && !legendItem.text.includes('Lower');
                                     }
                                 }
                             },
-                            plugins: [
-                                timeRangeSelector,
-                                {
-                                    id: 'recessionBands',
-                                    beforeDatasetsDraw: (chart) => {
-                                        const { ctx, chartArea, scales } = chart;
-                                        const filteredData = this.getFilteredData();
+                            tooltip: {
+                                mode: 'index',
+                                intersect: false,
+                                filter: function(tooltipItem) {
+                                    // Only show median lines in tooltip (hide p20/p80 individual lines)
+                                    return !tooltipItem.dataset.label.includes('Upper') && 
+                                        !tooltipItem.dataset.label.includes('Lower');
+                                },
+                                callbacks: {
+                                    label: function(context) {
+                                        const filteredData = context.chart.config._config.filteredData || [];
+                                        const dataPoint = filteredData[context.dataIndex];
+                                        const selectedCountries = context.chart.config._config.selectedCountries || [];
                                         
-                                        if (!chartArea || !scales.x || !scales.y || filteredData.length === 0) return;
-                                        
-                                        ctx.save();
-                                        
-                                        // Find all recession periods
-                                        let i = 0;
-                                        while (i < filteredData.length) {
-                                            // Look for the start of a recession period
-                                            if (filteredData[i].recession === 1) {
-                                                let recessionStart = i;
-                                                let recessionEnd = i;
-                                                
-                                                // Find the end of this recession period
-                                                while (recessionEnd < filteredData.length - 1 && filteredData[recessionEnd + 1].recession === 1) {
-                                                    recessionEnd++;
-                                                }
-                                                
-                                                // Calculate shading boundaries
-                                                // Start: one month before first recession month (or beginning of chart)
-                                                let shadingStart = Math.max(0, recessionStart - 1);
-                                                // End: last recession month
-                                                let shadingEnd = recessionEnd;
-                                                
-                                                // Draw rectangles for each period in the shading range
-                                                // Changed: j < shadingEnd (not j <= shadingEnd)
-                                                for (let j = shadingStart; j < shadingEnd; j++) {
-                                                    const startX = scales.x.getPixelForValue(j);
-                                                    const endX = scales.x.getPixelForValue(j + 1);
-                                                    
-                                                    ctx.fillStyle = 'rgba(108, 117, 125, 0.15)';
-                                                    ctx.fillRect(
-                                                        startX,
-                                                        chartArea.top,
-                                                        endX - startX,
-                                                        chartArea.bottom - chartArea.top
-                                                    );
-                                                }
-                                                
-                                                // Move past this recession period
-                                                i = recessionEnd + 1;
-                                            } else {
-                                                i++;
+                                        if (isSingleCountry) {
+                                            // Single country - show median + range
+                                            const country = selectedCountries[0];
+                                            if (dataPoint && dataPoint[country]) {
+                                                const countryData = dataPoint[country];
+                                                return `${context.dataset.label}: ${(countryData.RecessionRisk_p50 * 100).toFixed(1)}% [${(countryData.RecessionRisk_p20 * 100).toFixed(1)}% - ${(countryData.RecessionRisk_p80 * 100).toFixed(1)}%]`;
+                                            }
+                                        } else {
+                                            // Multiple countries - show median + range for each country
+                                            const countryCode = selectedCountries.find(country => 
+                                                context.dataset.label === this.chart.config._config.visualizer.countryLabels[country]
+                                            );
+                                            
+                                            if (dataPoint && countryCode && dataPoint[countryCode]) {
+                                                const countryData = dataPoint[countryCode];
+                                                return `${context.dataset.label}: ${(countryData.RecessionRisk_p50 * 100).toFixed(1)}% [${(countryData.RecessionRisk_p20 * 100).toFixed(1)}% - ${(countryData.RecessionRisk_p80 * 100).toFixed(1)}%]`;
                                             }
                                         }
                                         
-                                        ctx.restore();
+                                        return `${context.dataset.label}: ${(context.parsed.y * 100).toFixed(1)}%`;
                                     }
                                 }
-                            ]
+                            }
+                       },
+                       scales: {
+                           x: {
+                               display: true,
+                               ticks: {
+                                   maxRotation: 45,
+                                   font: { size: 10 }
+                               }
+                           },
+                           y: {
+                               display: true,
+                               title: {
+                                   display: true,
+                                   text: 'Recession Risk',
+                                   font: { size: 14, weight: 'bold' }
+                               },
+                               ticks: {
+                                   callback: function(value) {
+                                       return (value * 100).toFixed(0) + '%';
+                                   }
+                               },
+                               min: 0,
+                               max: 1
+                           }
+                       },
+                       interaction: {
+                           intersect: false,
+                           mode: 'index'
+                       },
+                       elements: {
+                           point: {
+                               radius: 0,
+                               hoverRadius: 6
+                           }
+                       }
+                   },
+                   plugins: [
+                       timeRangeSelector,
+                       // Only show recession bands for single country
+                       ...(isSingleCountry ? [{
+                           id: 'recessionBands',
+                           beforeDatasetsDraw: (chart) => {
+                               const { ctx, chartArea, scales } = chart;
+                               const filteredData = this.getFilteredData();
+                               
+                               if (!chartArea || !scales.x || !scales.y || filteredData.length === 0) return;
+                               
+                               const country = this.selectedCountries[0];
+                               ctx.save();
+                               
+                               let i = 0;
+                               while (i < filteredData.length) {
+                                   const dataPoint = filteredData[i];
+                                   const countryData = dataPoint[country];
+                                   
+                                   if (countryData && countryData.recession === 1) {
+                                       let recessionStart = i;
+                                       let recessionEnd = i;
+                                       
+                                       while (recessionEnd < filteredData.length - 1) {
+                                           const nextDataPoint = filteredData[recessionEnd + 1];
+                                           const nextCountryData = nextDataPoint[country];
+                                           if (nextCountryData && nextCountryData.recession === 1) {
+                                               recessionEnd++;
+                                           } else {
+                                               break;
+                                           }
+                                       }
+                                       
+                                       let shadingStart = Math.max(0, recessionStart - 1);
+                                       let shadingEnd = recessionEnd;
+                                       
+                                       for (let j = shadingStart; j < shadingEnd; j++) {
+                                           const startX = scales.x.getPixelForValue(j);
+                                           const endX = scales.x.getPixelForValue(j + 1);
+                                           
+                                           ctx.fillStyle = 'rgba(108, 117, 125, 0.15)';
+                                           ctx.fillRect(
+                                               startX,
+                                               chartArea.top,
+                                               endX - startX,
+                                               chartArea.bottom - chartArea.top
+                                           );
+                                       }
+                                       
+                                       i = recessionEnd + 1;
+                                   } else {
+                                       i++;
+                                   }
+                               }
+                               
+                               ctx.restore();
+                           }
+                       }] : [])
+                   ]
+               });
+
+               this.chart.config._config.filteredData = this.getFilteredData();
+               this.chart.config._config.visualizer = this;
+               this.chart.config._config.selectedCountries = this.selectedCountries;
+           }
+
+            prepareChartData() {
+                const filteredData = this.getFilteredData();
+                const labels = filteredData.map(row => row.Time);
+                const isSingleCountry = this.selectedCountries.length === 1;
+
+                if (isSingleCountry) {
+                    // Single country - show confidence bands (existing code)
+                    const country = this.selectedCountries[0];
+                    return {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: 'Upper Bound (p80)',
+                                data: filteredData.map(row => row[country] ? row[country].RecessionRisk_p80 : null),
+                                borderColor: 'transparent',
+                                backgroundColor: `${this.countryColors[country]}26`,
+                                fill: '+1',
+                                tension: 0.2,
+                                pointRadius: 0,
+                                pointHoverRadius: 0,
+                                order: 3
+                            },
+                            {
+                                label: `${this.countryLabels[country]}`,
+                                data: filteredData.map(row => row[country] ? row[country].RecessionRisk_p50 : null),
+                                borderColor: this.countryColors[country],
+                                backgroundColor: `${this.countryColors[country]}26`,
+                                borderWidth: 2.5,
+                                fill: '+1',
+                                tension: 0.2,
+                                pointRadius: 0,
+                                pointHoverRadius: 6,
+                                order: 1
+                            },
+                            {
+                                label: 'Lower Bound (p20)',
+                                data: filteredData.map(row => row[country] ? row[country].RecessionRisk_p20 : null),
+                                borderColor: 'transparent',
+                                backgroundColor: 'rgba(0, 0, 0, 0)',
+                                fill: 'origin',
+                                tension: 0.2,
+                                pointRadius: 0,
+                                pointHoverRadius: 0,
+                                order: 2
+                            }
+                        ]
+                    };
+                } else {
+                    // Multiple countries - show confidence bands for each
+                    const datasets = [];
+                    
+                    this.selectedCountries.forEach((country, index) => {
+                        const baseOrder = index * 3;
+                        
+                        // Upper bound (p80)
+                        datasets.push({
+                            label: `${this.countryLabels[country]} Upper (p80)`,
+                            data: filteredData.map(row => row[country] ? row[country].RecessionRisk_p80 : null),
+                            borderColor: 'transparent',
+                            backgroundColor: `${this.countryColors[country]}20`, // More transparent for multiple countries
+                            fill: `+1`, // Fill to next dataset (which will be median)
+                            tension: 0.2,
+                            pointRadius: 0,
+                            pointHoverRadius: 0,
+                            order: baseOrder + 3
                         });
-
-                        this.chart.config._config.filteredData = this.getFilteredData();
-                        this.chart.config._config.visualizer = this;
-                    }
-
-                    prepareChartData() {
-                        const filteredData = this.getFilteredData();
-                        const labels = filteredData.map(row => row.Time);
-
-                        return {
-                            labels: labels,
-                            datasets: [
-                                {
-                                    label: 'Upper Bound (p80)',
-                                    data: filteredData.map(row => row.RecessionRisk_p80),
-                                    borderColor: 'transparent',
-                                    backgroundColor: 'rgba(0, 114, 189, 0.15)',
-                                    fill: '+1',
-                                    tension: 0.2,
-                                    pointRadius: 0,
-                                    pointHoverRadius: 0,
-                                    order: 3
-                                },
-                                {
-                                    label: 'Recession Risk (Median)',
-                                    data: filteredData.map(row => row.RecessionRisk_p50),
-                                    borderColor: 'rgb(0, 114, 189)',
-                                    backgroundColor: 'rgba(0, 114, 189, 0.15)',
-                                    borderWidth: 2.5,
-                                    fill: '+1',
-                                    tension: 0.2,
-                                    pointRadius: 0,
-                                    pointHoverRadius: 6,
-                                    order: 1
-                                },
-                                {
-                                    label: 'Lower Bound (p20)',
-                                    data: filteredData.map(row => row.RecessionRisk_p20),
-                                    borderColor: 'transparent',
-                                    backgroundColor: 'rgba(0, 114, 189, 0.0)',
-                                    fill: 'origin',
-                                    tension: 0.2,
-                                    pointRadius: 0,
-                                    pointHoverRadius: 0,
-                                    order: 2
-                                }
-                            ]
-                        };
-                    }
-
-                    updateChart() {
-                        this.createChart();
-                        this.showStats();
-                    }
-
-                    showStats() {
-                        const filteredData = this.getFilteredData();
                         
-                        const currentMonthEl = document.getElementById('current-month-stat');
-                        const lastMonthEl = document.getElementById('last-month-stat');
+                        // Median line
+                        datasets.push({
+                            label: this.countryLabels[country],
+                            data: filteredData.map(row => row[country] ? row[country].RecessionRisk_p50 : null),
+                            borderColor: this.countryColors[country],
+                            backgroundColor: `${this.countryColors[country]}20`,
+                            borderWidth: 2.5,
+                            fill: `+1`, // Fill to next dataset (which will be lower bound)
+                            tension: 0.2,
+                            pointRadius: 0,
+                            pointHoverRadius: 6,
+                            order: baseOrder + 1
+                        });
                         
-                        if (!filteredData || filteredData.length === 0) {
-                            if (currentMonthEl) {
-                                currentMonthEl.innerHTML = `
-                                    <div class="stat-value">--</div>
-                                    <div class="stat-range">--</div>
-                                `;
-                            }
-                            if (lastMonthEl) {
-                                lastMonthEl.innerHTML = `
-                                    <div class="stat-value">--</div>
-                                    <div class="stat-range">--</div>
-                                `;
-                            }
-                            return;
-                        }
+                        // Lower bound (p20)
+                        datasets.push({
+                            label: `${this.countryLabels[country]} Lower (p20)`,
+                            data: filteredData.map(row => row[country] ? row[country].RecessionRisk_p20 : null),
+                            borderColor: 'transparent',
+                            backgroundColor: 'rgba(0, 0, 0, 0)',
+                            fill: index === 0 ? 'origin' : false, // Only fill to origin for first country
+                            tension: 0.2,
+                            pointRadius: 0,
+                            pointHoverRadius: 0,
+                            order: baseOrder + 2
+                        });
+                    });
 
-                        const currentMonth = filteredData[filteredData.length - 1];
-                        const lastMonth = filteredData.length > 1 ? filteredData[filteredData.length - 2] : null;
-
-                        if (currentMonthEl && currentMonth) {
-                            currentMonthEl.innerHTML = `
-                                <div class="stat-period">${currentMonth.Time}</div>
-                                <div class="stat-value">${(currentMonth.RecessionRisk_p50 * 100).toFixed(1)}%</div>
-                                <div class="stat-range">[${(currentMonth.RecessionRisk_p20 * 100).toFixed(1)}% - ${(currentMonth.RecessionRisk_p80 * 100).toFixed(1)}%]</div>
-                            `;
-                        }
-
-                        if (lastMonthEl) {
-                            if (lastMonth) {
-                                lastMonthEl.innerHTML = `
-                                    <div class="stat-period">${lastMonth.Time}</div>
-                                    <div class="stat-value">${(lastMonth.RecessionRisk_p50 * 100).toFixed(1)}%</div>
-                                    <div class="stat-range">[${(lastMonth.RecessionRisk_p20 * 100).toFixed(1)}% - ${(lastMonth.RecessionRisk_p80 * 100).toFixed(1)}%]</div>
-                                `;
-                            } else {
-                                lastMonthEl.innerHTML = `
-                                    <div class="stat-value">--</div>
-                                    <div class="stat-range">--</div>
-                                `;
-                            }
-                        }
-                    }
-
-                    hideLoading() {
-                        document.getElementById('loading').style.display = 'none';
-                        document.getElementById('chart-section').style.display = 'block';
-                    }
-
-                    showError(message) {
-                        document.getElementById('loading').style.display = 'none';
-                        const errorDiv = document.getElementById('error');
-                        errorDiv.textContent = message;
-                        errorDiv.style.display = 'block';
-                    }
+                    return {
+                        labels: labels,
+                        datasets: datasets
+                    };
                 }
+            }
 
-                document.addEventListener('DOMContentLoaded', () => {
-                    new RecessionRiskVisualizer();
-                });
-    </script>
+           updateChart() {
+               this.createChart();
+               this.showStats();
+           }
+
+           showStats() {
+               const filteredData = this.getFilteredData();
+               const currentMonthEl = document.getElementById('current-month-stat');
+               const lastMonthEl = document.getElementById('last-month-stat');
+               
+               if (!filteredData || filteredData.length === 0) {
+                   if (currentMonthEl) {
+                       currentMonthEl.innerHTML = `<div class="stat-value">--</div><div class="stat-range">--</div>`;
+                   }
+                   if (lastMonthEl) {
+                       lastMonthEl.innerHTML = `<div class="stat-value">--</div><div class="stat-range">--</div>`;
+                   }
+                   return;
+               }
+
+               const currentMonth = filteredData[filteredData.length - 1];
+               const lastMonth = filteredData.length > 1 ? filteredData[filteredData.length - 2] : null;
+
+               if (this.selectedCountries.length === 1) {
+                   // Single country stats
+                   const country = this.selectedCountries[0];
+                   const currentData = currentMonth[country];
+                   const lastData = lastMonth ? lastMonth[country] : null;
+
+                   if (currentMonthEl && currentData) {
+                       currentMonthEl.innerHTML = `
+                           <div class="stat-period">${currentMonth.Time}</div>
+                           <div class="stat-value">${(currentData.RecessionRisk_p50 * 100).toFixed(1)}%</div>
+                           <div class="stat-range">[${(currentData.RecessionRisk_p20 * 100).toFixed(1)}% - ${(currentData.RecessionRisk_p80 * 100).toFixed(1)}%]</div>
+                       `;
+                   }
+
+                   if (lastMonthEl) {
+                       if (lastData) {
+                           lastMonthEl.innerHTML = `
+                               <div class="stat-period">${lastMonth.Time}</div>
+                               <div class="stat-value">${(lastData.RecessionRisk_p50 * 100).toFixed(1)}%</div>
+                               <div class="stat-range">[${(lastData.RecessionRisk_p20 * 100).toFixed(1)}% - ${(lastData.RecessionRisk_p80 * 100).toFixed(1)}%]</div>
+                           `;
+                       } else {
+                           lastMonthEl.innerHTML = `<div class="stat-value">--</div><div class="stat-range">--</div>`;
+                       }
+                   }
+               } else {
+                   // Multiple countries stats
+                   if (currentMonthEl) {
+                       let html = `<div class="stat-period">${currentMonth.Time}</div><div class="multi-country-stats">`;
+                       this.selectedCountries.forEach(country => {
+                           const data = currentMonth[country];
+                           if (data) {
+                               html += `
+                                   <div class="country-stat-row">
+                                       <span class="country-name">${this.countryLabels[country]}</span>
+                                       <span class="country-value">${(data.RecessionRisk_p50 * 100).toFixed(1)}%</span>
+                                   </div>
+                               `;
+                           }
+                       });
+                       html += '</div>';
+                       currentMonthEl.innerHTML = html;
+                   }
+
+                   if (lastMonthEl && lastMonth) {
+                       let html = `<div class="stat-period">${lastMonth.Time}</div><div class="multi-country-stats">`;
+                       this.selectedCountries.forEach(country => {
+                           const data = lastMonth[country];
+                           if (data) {
+                               html += `
+                                   <div class="country-stat-row">
+                                       <span class="country-name">${this.countryLabels[country]}</span>
+                                       <span class="country-value">${(data.RecessionRisk_p50 * 100).toFixed(1)}%</span>
+                                   </div>
+                               `;
+                           }
+                       });
+                       html += '</div>';
+                       lastMonthEl.innerHTML = html;
+                   } else if (lastMonthEl) {
+                       lastMonthEl.innerHTML = `<div class="stat-value">--</div><div class="stat-range">--</div>`;
+                   }
+               }
+           }
+
+           hideLoading() {
+               document.getElementById('loading').style.display = 'none';
+               document.getElementById('chart-section').style.display = 'block';
+           }
+
+           showError(message) {
+               document.getElementById('loading').style.display = 'none';
+               const errorDiv = document.getElementById('error');
+               errorDiv.textContent = message;
+               errorDiv.style.display = 'block';
+           }
+       }
+
+       document.addEventListener('DOMContentLoaded', () => {
+           new RecessionRiskVisualizer();
+       });
+   </script>
 </body>
 </html>
+            
+
+
+
+            
