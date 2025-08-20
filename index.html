@@ -61,7 +61,7 @@
         /* New control panel */
         .control-panel {
             display: grid;
-            grid-template-columns: repeat(6, 1fr);
+            grid-template-columns: repeat(5, 1fr);
             gap: 15px;
             margin-bottom: 30px;
         }
@@ -268,12 +268,25 @@
             height: 16px;
         }
 
-        /* Last update styling */
-        .last-update-time {
-            font-size: 1.2rem;
-            color: #0072bd;
-            font-weight: 700;
+        /* Last update line styling */
+        .last-update-line {
+            margin-bottom: 20px;
+            padding: 12px 0;
+            font-size: 0.95rem;
+            color: #6c757d;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
         }
+
+        .last-update-line span {
+            font-weight: 500;
+        }
+
+        #last-updated-text {
+            color: #0072bd;
+            font-weight: 600;
+        }
+
 
         .chart-container {
             position: relative;
@@ -524,6 +537,12 @@
             }
         }
 
+        @media (max-width: 900px) {
+            .control-panel {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
         @media (max-width: 768px) {
             .control-panel {
                 grid-template-columns: 1fr;
@@ -536,7 +555,7 @@
             .content {
                 padding: 25px;
             }
-            
+
             .chart-container {
                 height: 450px;
                 padding: 15px;
@@ -568,8 +587,16 @@
             <div id="error" class="error" style="display: none;"></div>
             
             <div id="chart-section" style="display: none;">
+
+                <!-- Last Update Text Line -->
+                <div class="last-update-line">
+                    <span>Last Update: <span id="last-updated-text">--</span></span>
+                </div>
+                
                 <!-- New unified control panel with reordered boxes -->
                 <div class="control-panel">
+
+
                     <!-- Country Selection Box -->
                     <div class="control-box">
                         <div class="control-box-title">Countries</div>
@@ -593,11 +620,21 @@
                         </div>
                     </div>
 
-                    <!-- Last Update Box -->
+                    <!-- Current Month Box -->
                     <div class="control-box">
-                        <div class="control-box-title">Last Update</div>
-                        <div class="control-box-content">
-                            <div id="last-updated-text" class="last-update-time">--</div>
+                        <div class="control-box-title">Latest Month</div>
+                        <div class="control-box-content" id="current-month-stat">
+                            <div class="stat-value">--</div>
+                            <div class="stat-range">--</div>
+                        </div>
+                    </div>
+
+                    <!-- Last Month Box -->
+                    <div class="control-box">
+                        <div class="control-box-title">Previous Month</div>
+                        <div class="control-box-content" id="last-month-stat">
+                            <div class="stat-value">--</div>
+                            <div class="stat-range">--</div>
                         </div>
                     </div>
 
@@ -620,8 +657,8 @@
                     <div class="control-box">
                         <div class="control-box-title">Resources</div>
                         <div class="control-box-content">
-                            <div style="display: flex; flex-direction: column; gap: 8px;">
-                                <button onclick="window.open('full-report.pdf', '_blank')" class="download-button" style="font-size: 0.85rem; padding: 8px 16px;">
+                            <div style="display: flex; flex-direction: column; gap: 8px; align-items: center;">
+                                <button onclick="window.open('full-report.pdf', '_blank')" class="download-button" style="font-size: 0.85rem; padding: 8px 16px; display: inline-flex;">
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                                         <polyline points="7,10 12,15 17,10"/>
@@ -629,7 +666,7 @@
                                     </svg>
                                     Full Report
                                 </button>
-                                <button onclick="window.open('nowcasting-recession-risk.pdf', '_blank')" class="download-button" style="font-size: 0.85rem; padding: 8px 16px;">
+                                <button onclick="window.open('nowcasting-recession-risk.pdf', '_blank')" class="download-button" style="font-size: 0.85rem; padding: 8px 16px; display: inline-flex;">
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                                         <polyline points="7,10 12,15 17,10"/>
@@ -641,23 +678,7 @@
                         </div>
                     </div>
 
-                    <!-- Current Month Box -->
-                    <div class="control-box">
-                        <div class="control-box-title">Latest Month</div>
-                        <div class="control-box-content" id="current-month-stat">
-                            <div class="stat-value">--</div>
-                            <div class="stat-range">--</div>
-                        </div>
-                    </div>
 
-                    <!-- Last Month Box -->
-                    <div class="control-box">
-                        <div class="control-box-title">Previous Month</div>
-                        <div class="control-box-content" id="last-month-stat">
-                            <div class="stat-value">--</div>
-                            <div class="stat-range">--</div>
-                        </div>
-                    </div>
                 </div>
                 
                 <div class="chart-container">
