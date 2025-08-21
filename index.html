@@ -1440,21 +1440,16 @@
                         maintainAspectRatio: false,
                         plugins: {
                             title: {
-                                display: true,
-                                text: isSingleCountry 
-                                    ? `Recession Risk - ${this.countryLabels[this.selectedCountries[0]]}`
-                                    : 'Recession Risk - Comparison',
-                                font: { size: 18, weight: 'bold' },
-                                color: '#333'
+                                display: false  // Remove title completely
                             },
                             legend: {
-                                display: !isSingleCountry,
+                                display: true,  // Always show legend
                                 position: 'top',
                                 labels: {
                                     usePointStyle: true,
                                     padding: 20,
                                     filter: function(legendItem) {
-                                        // Only show median lines in legend for multiple countries
+                                        // Only show median lines in legend (hide confidence bands)
                                         return !legendItem.text.includes('Upper') && !legendItem.text.includes('Lower');
                                     }
                                 }
@@ -1675,7 +1670,7 @@
                         setTimeout(() => {
                             this.chart.data.datasets[index].data = dataset.data;
                             this.chart.update('none');
-                        }, index * 200); // 200ms delay between each line
+                        }, index * 50); // 50ms delay between each line
                     });
                 }
             }
