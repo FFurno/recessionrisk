@@ -207,7 +207,7 @@
         }
 
         .stat-period {
-            font-size: 0.9rem;
+            font-size: 1.1rem;  /* Increased from 0.9rem to 1.1rem */
             color: #495057;
             margin-bottom: 8px;
         }
@@ -1137,13 +1137,20 @@
 
             updateSelectedCountDisplay() {
                 const checkboxes = document.querySelectorAll('#country-dropdown-menu input[type="checkbox"]');
-                const selectedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
+                const selectedCountries = Array.from(checkboxes)
+                    .filter(cb => cb.checked)
+                    .map(cb => cb.value);
+                const selectedCount = selectedCountries.length;
                 const selectedCountEl = document.getElementById('selected-count');
                 
-                if (selectedCount === 1) {
-                    const selectedCheckbox = Array.from(checkboxes).find(cb => cb.checked);
-                    selectedCountEl.textContent = this.countryLabels[selectedCheckbox.value];
+                if (selectedCount === 0) {
+                    selectedCountEl.textContent = 'Select countries';
+                } else if (selectedCount <= 3) {
+                    // Show individual country names up to 3 countries
+                    const countryNames = selectedCountries.map(country => this.countryLabels[country]);
+                    selectedCountEl.textContent = countryNames.join(', ');
                 } else {
+                    // Show count for 4+ countries
                     selectedCountEl.textContent = `${selectedCount} countries`;
                 }
             }
