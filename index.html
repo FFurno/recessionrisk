@@ -1190,7 +1190,7 @@
                 });
 
                 this.updateRangeSliders();
-                this.updateChart();
+                this.createChart();
                 this.showStats();
             }
 
@@ -1405,7 +1405,7 @@
                 });
             }
 
-            createChart() {
+            createChart(skipAnimation = false) {
                 const ctx = document.getElementById('chart').getContext('2d');
                 const chartData = this.prepareChartData();
 
@@ -1665,13 +1665,19 @@
 
                 this.chart.config._config.selectedCountries = this.selectedCountries;
 
-                // Sequential line appearance - populate datasets one by one
-                chartData.datasets.forEach((dataset, index) => {
-                    setTimeout(() => {
-                        this.chart.data.datasets[index].data = dataset.data;
-                        this.chart.update('none');
-                    }, index * 200); // 200ms delay between each line
-                });
+                if (skipAnimation) {
+                    // Update immediately for range changes
+                    this.chart.data = chartData;
+                    this.chart.update('none');
+                } else {
+                    // Sequential line appearance - populate datasets one by one
+                    chartData.datasets.forEach((dataset, index) => {
+                        setTimeout(() => {
+                            this.chart.data.datasets[index].data = dataset.data;
+                            this.chart.update('none');
+                        }, index * 200); // 200ms delay between each line
+                    });
+                }
             }
 
             getCountryColor(country) {
@@ -1781,7 +1787,7 @@
                 }
             }
             updateChart() {
-                this.createChart();
+                this.createChart(true);
                 this.showStats();
             }
 
