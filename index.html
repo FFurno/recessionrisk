@@ -61,7 +61,7 @@
         /* New control panel */
         .control-panel {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(3, 1fr);
             gap: 15px;
             margin-bottom: 30px;
         }
@@ -303,6 +303,25 @@
             }
         }
 
+        @media (max-width: 768px) {
+            .last-update-line {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+            
+            .top-downloads {
+                align-self: stretch;
+                justify-content: center;
+            }
+            
+            .download-button-small {
+                flex: 1;
+                justify-content: center;
+                max-width: 100px;
+            }
+        }
+
         /* Last update line styling */
         .last-update-line {
             margin-bottom: 20px;
@@ -311,6 +330,9 @@
             color: #6c757d;
             text-align: left;
             border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .last-update-line span {
@@ -320,6 +342,38 @@
         #last-updated-text {
             color: #0072bd;
             font-weight: 600;
+        }
+
+        .top-downloads {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .download-button-small {
+            background: linear-gradient(135deg, #0072bd 0%, #005a96 100%);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .download-button-small:hover {
+            background: linear-gradient(135deg, #005a96 0%, #004678 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 3px 8px rgba(0, 114, 189, 0.3);
+        }
+
+        .download-button-small svg {
+            width: 14px;
+            height: 14px;
         }
 
 
@@ -623,14 +677,39 @@
             
             <div id="chart-section" style="display: none;">
 
-                <!-- Last Update Text Line -->
+                <!-- Last Update Text Line with Top Downloads -->
                 <div class="last-update-line">
                     <span>Last Updated: <span id="last-updated-text">--</span></span>
+                    <div class="top-downloads">
+                        <button id="download-btn" class="download-button-small">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="7,10 12,15 17,10"/>
+                                <line x1="12" y1="15" x2="12" y2="3"/>
+                            </svg>
+                            Data
+                        </button>
+                        <button onclick="window.open('full-report.pdf', '_blank')" class="download-button-small">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="7,10 12,15 17,10"/>
+                                <line x1="12" y1="15" x2="12" y2="3"/>
+                            </svg>
+                            Report
+                        </button>
+                        <button onclick="window.open('nowcasting-recession-risk.pdf', '_blank')" class="download-button-small">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="7,10 12,15 17,10"/>
+                                <line x1="12" y1="15" x2="12" y2="3"/>
+                            </svg>
+                            Paper
+                        </button>
+                    </div>
                 </div>
                 
                 <!-- New unified control panel with reordered boxes -->
                 <div class="control-panel">
-
 
                     <!-- Country Selection Box -->
                     <div class="control-box">
@@ -670,43 +749,6 @@
                         <div class="control-box-content" id="last-month-stat">
                             <div class="stat-value">--</div>
                             <div class="stat-range">--</div>
-                        </div>
-                    </div>
-
-                    <!-- Downloads Box with Two-Row Layout -->
-                    <div class="control-box">
-                        <div class="control-box-title">Downloads</div>
-                        <div class="control-box-content">
-                            <div class="downloads-container">
-                                <div class="download-row-full">
-                                    <button id="download-btn" class="download-button download-button-compact">
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                                            <polyline points="7,10 12,15 17,10"/>
-                                            <line x1="12" y1="15" x2="12" y2="3"/>
-                                        </svg>
-                                        Data
-                                    </button>
-                                </div>
-                                <div class="download-row-split">
-                                    <button onclick="window.open('full-report.pdf', '_blank')" class="download-button download-button-compact">
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                                            <polyline points="7,10 12,15 17,10"/>
-                                            <line x1="12" y1="15" x2="12" y2="3"/>
-                                        </svg>
-                                        Report
-                                    </button>
-                                    <button onclick="window.open('nowcasting-recession-risk.pdf', '_blank')" class="download-button download-button-compact">
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                                            <polyline points="7,10 12,15 17,10"/>
-                                            <line x1="12" y1="15" x2="12" y2="3"/>
-                                        </svg>
-                                        Paper
-                                    </button>
-                                </div>
-                            </div>
                         </div>
                     </div>
 
