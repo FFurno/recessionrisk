@@ -562,53 +562,51 @@
             display: block;
         }
 
-        /* FAQ Specific Styling */
-        .faq-container {
-            max-width: 1200px;
+        /* FAQ Styling */
+        .faq-simple-container {
+            max-width: 800px;
             margin: 0 auto;
             padding: 40px;
         }
 
-        .faq-section {
-            margin-bottom: 40px;
-        }
-
-        .faq-section h2 {
+        .faq-main-title {
             color: #343a40;
-            font-size: 1.5rem;
+            font-size: 2rem;
             font-weight: 600;
-            margin-bottom: 20px;
+            margin-bottom: 40px;
+            text-align: center;
             border-bottom: 2px solid #0072bd;
-            padding-bottom: 10px;
+            padding-bottom: 15px;
         }
 
-        .faq-item {
-            margin-bottom: 25px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            padding: 20px;
-            border-left: 4px solid #0072bd;
+        .faq-simple-item {
+            margin-bottom: 30px;
         }
 
-        .faq-question {
-            font-weight: 600;
-            color: #495057;
-            margin-bottom: 10px;
+        .faq-simple-question {
+            font-weight: 700;
+            color: #343a40;
+            margin-bottom: 8px;
             font-size: 1.1rem;
+            line-height: 1.4;
         }
 
-        .faq-answer {
+        .faq-simple-answer {
             color: #6c757d;
             line-height: 1.6;
+            font-size: 1rem;
+            margin-left: 0;
         }
 
-        .faq-answer p {
-            margin-bottom: 10px;
-        }
-
-        .faq-answer ul {
-            margin-left: 20px;
-            margin-bottom: 10px;
+        /* Responsive FAQ */
+        @media (max-width: 768px) {
+            .faq-simple-container {
+                padding: 25px;
+            }
+            
+            .faq-main-title {
+                font-size: 1.5rem;
+            }
         }
 
         /* Responsive tabs */
@@ -656,12 +654,12 @@
     <div class="container">
         <div class="header">
             <h1>Recession Risk </h1>
-            <p>Based on "<a href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4706700" style="color: #adb5bd; text-decoration: none;">Nowcasting Recession Risk</a>", by Furno, Giannone (2024)</p>
+            <p>Based on "<a href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4706700" style="color: #adb5bd; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">Nowcasting Recession Risk</a>" by Furno & Giannone (2024)</p>
         </div>
         
         <!-- Add Tab Navigation -->
         <div class="tab-navigation">
-            <button class="tab-button active" data-tab="dashboard">Nowcast</button>
+            <button class="tab-button active" data-tab="dashboard">Dashboard</button>
             <button class="tab-button" data-tab="faq">FAQ</button>
         </div>
 
@@ -770,24 +768,57 @@
                     </div>
                 </div>
             </div>
-
-            <!-- FAQ Tab Content -->
-            <div id="faq-tab" class="tab-content">
-                <div class="faq-container">
-                    <div class="faq-section">
-                        <h2>Model Methodology</h2>
-                        
-                        <div class="faq-item">
-                            <div class="faq-question">What is the recession risk model?</div>
-                            <div class="faq-answer">
-                                <p>This model provides real-time estimates of recession probability based on the methodology developed by Furno and Giannone (2024).</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
         </div>
+
+        <!-- FAQ Tab Content -->
+        <div id="faq-tab" class="tab-content">
+            <div class="faq-simple-container">
+                
+                <h1 class="faq-main-title">Frequently Asked Questions</h1>
+                
+                <div class="faq-simple-item">
+                    <div class="faq-simple-question">Q: What is the recession risk model?</div>
+                    <div class="faq-simple-answer">A: This model provides real-time estimates of recession probability based on the methodology developed by Furno and Giannone (2024). The model uses a comprehensive set of economic indicators to assess the likelihood of an economy entering a recession in the near term.</div>
+                </div>
+
+                <div class="faq-simple-item">
+                    <div class="faq-simple-question">Q: How often is the model updated?</div>
+                    <div class="faq-simple-answer">A: The recession risk estimates are updated monthly as new economic data becomes available. The last update date is shown at the top of the dashboard.</div>
+                </div>
+
+                <div class="faq-simple-item">
+                    <div class="faq-simple-question">Q: What data sources are used?</div>
+                    <div class="faq-simple-answer">A: The model incorporates various high-frequency economic indicators including labor market indicators, financial market data, business sentiment surveys, and industrial production metrics.</div>
+                </div>
+
+                <div class="faq-simple-item">
+                    <div class="faq-simple-question">Q: How should I interpret the recession risk percentages?</div>
+                    <div class="faq-simple-answer">A: The percentages represent the probability that the economy will be in recession within the next few months. For example, a 15% risk means there's a 15% chance of recession. The confidence intervals [lower% - upper%] show the uncertainty around this estimate.</div>
+                </div>
+
+                <div class="faq-simple-item">
+                    <div class="faq-simple-question">Q: What do the shaded areas on the chart represent?</div>
+                    <div class="faq-simple-answer">A: The shaded areas indicate historical recession periods as officially defined by the respective countries' statistical agencies (e.g., NBER for the US, CEPR for Europe).</div>
+                </div>
+
+                <div class="faq-simple-item">
+                    <div class="faq-simple-question">Q: What's the difference between the line and the confidence bands?</div>
+                    <div class="faq-simple-answer">A: The main line shows the median estimate (50th percentile) of recession risk. The confidence bands show the 20th and 80th percentiles, indicating the range of uncertainty around the central estimate.</div>
+                </div>
+
+                <div class="faq-simple-item">
+                    <div class="faq-simple-question">Q: Can I download the data?</div>
+                    <div class="faq-simple-answer">A: Yes! Use the "Data" button to download CSV files containing the recession risk estimates. You can download data for individual countries or combined datasets for multiple countries.</div>
+                </div>
+
+                <div class="faq-simple-item">
+                    <div class="faq-simple-question">Q: How should I cite this work?</div>
+                    <div class="faq-simple-answer">A: Please cite: Furno, D., & Giannone, D. (2024). "Nowcasting Recession Risk." Available at: [your website URL]</div>
+                </div>
+
+            </div>
+        </div>
+
     </div>
 
 
