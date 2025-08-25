@@ -796,7 +796,7 @@
                 
                 <div class="faq-simple-item">
                     <div class="faq-simple-question">Q: What is the recession risk nowcast?</div>
-                    <div class="faq-simple-answer">A: The recession risk nowcast estimates the probability that the economy is experiencing a recession in the current month. For example, a 25% recession risk for November means there is a 25% chance the economy is experiencing a recession in November. Therefore, these estimates are "nowcasts" of the current state of the economy, not forecasts. The confidence intervals show the uncertainty around the point estimates.</div>
+                    <div class="faq-simple-answer">A: The recession risk nowcast estimates the probability that the economy is experiencing a recession in the current month. For example, a 25% recession risk for November means there is a 25% chance the economy is in a state of recession in November. Therefore, these estimates are "nowcasts" of the current state of the economy, not forecasts. Recession risk is estimated using a parsimonious logit model that leverages both economic and financial conditions, as in <a href="https://doi.org/10.4337/9781035310050.00011" target="_blank">Furno and Giannone (2024)</a>. Bayesian methods permit a full characterization of uncertainty around the point estimates.</div>
                 </div>
 
                 <div class="faq-simple-item">
@@ -806,7 +806,7 @@
 
                 <div class="faq-simple-item">
                     <div class="faq-simple-question">Q: What economic data drives these recession risk estimates?</div>
-                    <div class="faq-simple-answer">A: The bayesian logit model combines macroeconomic and financial indicators specific to each region or country. For the US, it uses the ISM PMI Manufacturing and the Composite Indicator of Systemic Stress (CISS) for the US. The ISM PMI Manufacturing is a monthly survey of purchasing managers at manufacturing companies that measures business conditions and economic activity in the manufacturing sector. For each European region and country (Euro Area, Germany, France, Spain, and Italy), it uses their respective Economic Sentiment Indicator (ESI) paired with their respective CISS. The ESI captures real economic activity through comprehensive business and consumer surveys, while the CISS measures financial market stress across bonds, equities, money markets, foreign exchange, and financial intermediaries.</div>
+                    <div class="faq-simple-answer">A: The bayesian logit model combines macroeconomic and financial indicators specific to each region or country. For the US, it uses the ISM PMI Manufacturing and the Composite Indicator of Systemic Stress (CISS). The ISM PMI Manufacturing is a monthly survey of purchasing managers at manufacturing companies that measures business conditions and economic activity in the manufacturing sector. For each European region and country (Euro Area, Germany, France, Spain, and Italy), it uses their respective Economic Sentiment Indicator (ESI) paired with their respective CISS. The ESI captures real economic activity through comprehensive business and consumer surveys, while the CISS measures financial market stress across bonds, equities, money markets, foreign exchange, and financial intermediaries.</div>
                 </div>
 
                 <div class="faq-simple-item">
@@ -821,7 +821,7 @@
 
                 <div class="faq-simple-item">
                     <div class="faq-simple-question">Q: What time period do the estimates cover?</div>
-                    <div class="faq-simple-answer">A: The recession risk estimates use data starting from different periods for each region/country: 1980:m1 for the US, 1985:m1 for the Euro Area and Germany, 1985:m2 for France, 1991:m7 for Spain, and 1986:m1 for Italy. All estimates run through the latest available month. The reported estimates are produced with a pseudo out-of-sample expanding window approach, to highlight the model's stability over time. Importantly, a 24-month estimation delay is applied when estimating the model to account for the inherent uncertainty in classifying periods as recessions or expansions in real-time, since official recession announcements typically come with significant delays.</div>
+                    <div class="faq-simple-answer">A: The recession risk estimates use data starting from different periods for each region/country: 1980:m1 for the US, 1985:m1 for the Euro Area and Germany, 1985:m2 for France, 1991:m7 for Spain, and 1986:m1 for Italy. All estimates run through the latest available month. The reported estimates are produced with a pseudo out-of-sample expanding window approach, to highlight the model's stability over time and its accuracy in real-time conditions. Importantly, a 24-month estimation delay is applied when estimating the model to account for the inherent uncertainty in classifying periods as recessions or expansions in real-time, since official recession announcements typically come with significant delays.</div>
                 </div>
 
                 <div class="faq-simple-item">
@@ -832,6 +832,14 @@
                 <div class="faq-simple-item">
                     <div class="faq-simple-question">Q: Are these estimates revised, and how reliable are they in real-time?</div>
                     <div class="faq-simple-answer">A: The estimates are subject to minimal revisions because the underlying data sources are timely and stable. The CISS uses financial market prices (which aren't revised), and the PMI/ESI surveys have only minor seasonal adjustments. Tests using real-time data vintages are available in <a href="https://doi.org/10.4337/9781035310050.00011" target="_blank">Furno and Giannone (2024)</a> and confirm high stability over time. The correlation between initial estimates and final estimates is 0.99 for the US and 0.98 for the Euro Area, confirming their reliability for real-time decision making.</div>
+                </div>
+
+                <div class="faq-simple-item">
+                <div class="faq-simple-question">Q: How should I cite this work?</div>
+                <div class="faq-simple-answer">
+                    A: Please cite as: <br><br>
+                    Furno, Francesco, and Domenico Giannone. <i>Nowcasting Recession Risk</i>. <i>Research Methods and Applications on Macroeconomic Forecasting</i>, 2024.
+                </div>
                 </div>
 
             </div>
