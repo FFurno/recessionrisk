@@ -793,6 +793,11 @@ class RecessionRiskVisualizer {
         return index >= 0 ? this.colorPalette[index] : this.colorPalette[0];
     }
 
+    getAvailableCountryColor(country, availableCountries) {
+        // Use the index within availableCountries, not selectedCountries
+        const index = availableCountries.indexOf(country);
+        return index >= 0 ? this.colorPalette[index] : this.colorPalette[0];
+    }
 
     getFilteredData() {
         const allTimePoints = this.getAllTimePoints();
@@ -1072,7 +1077,7 @@ class RecessionRiskVisualizer {
                             const availableCountries = chart.config._config.availableCountries || [];
                             
                             availableCountries.forEach((country, countryIndex) => {
-                                const countryColor = visualizer.getCountryColor(country);
+                                const countryColor = visualizer.getAvailableCountryColor(country, availableCountries);
                                 
                                 let i = 0;
                                 while (i < filteredData.length) {
@@ -1234,8 +1239,7 @@ class RecessionRiskVisualizer {
             const country = availableCountries[0];
             const modeLabel = this.estimationMode === 'realtime' ? ' (Real-Time)' : '';
             
-            // Use orange for real-time, blue for latest
-            const chartColor = this.estimationMode === 'realtime' ? this.colorPalette[1] : this.getCountryColor(country);
+            const chartColor = this.getAvailableCountryColor(country, availableCountries);
             
             return {
                 labels: labels,
@@ -1299,7 +1303,7 @@ class RecessionRiskVisualizer {
                     label: `${this.countryLabels[country]} Upper (p80)`,
                     data: filteredData.map(row => row[country] ? row[country].RecessionRisk_p80 : null),
                     borderColor: 'transparent',
-                    backgroundColor: `${this.getCountryColor(country)}20`,
+                    backgroundColor: `${this.getAvailableCountryColor(country, availableCountries)}20`,
                     fill: `+1`,
                     tension: 0.2,
                     pointRadius: 0,
@@ -1311,8 +1315,8 @@ class RecessionRiskVisualizer {
                 datasets.push({
                     label: `${this.countryLabels[country]}${modeLabel}`,
                     data: filteredData.map(row => row[country] ? row[country].RecessionRisk_p50 : null),
-                    borderColor: this.getCountryColor(country),
-                    backgroundColor: `${this.getCountryColor(country)}20`,
+                    borderColor: this.getAvailableCountryColor(country, availableCountries),
+                    backgroundColor: `${this.getAvailableCountryColor(country, availableCountries)}20`,
                     borderWidth: 2.5,
                     fill: `+1`,
                     tension: 0.2,
