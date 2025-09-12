@@ -938,7 +938,7 @@ class RecessionRiskVisualizer {
                                     const country = selectedCountries[0];
                                     if (dataPoint && dataPoint[country]) {
                                         const countryData = dataPoint[country];
-                                        return `${context.dataset.label}: ${(countryData.RecessionRisk_p50 * 100).toFixed(1)}% [${(countryData.RecessionRisk_p20 * 100).toFixed(1)}% - ${(countryData.RecessionRisk_p80 * 100).toFixed(1)}%]`;
+                                        return `${context.dataset.label}: ${(countryData.RecessionRisk_p50 * 100).toFixed(1)}% [${(countryData.RecessionRisk_p05 * 100).toFixed(1)}% - ${(countryData.RecessionRisk_p95 * 100).toFixed(1)}%]`;
                                     }
                                 } else {
                                     const datasetLabel = context.dataset.label;
@@ -961,7 +961,7 @@ class RecessionRiskVisualizer {
                                     }
                                     
                                     if (countryData) {
-                                        return `${datasetLabel}: ${(countryData.RecessionRisk_p50 * 100).toFixed(1)}% [${(countryData.RecessionRisk_p20 * 100).toFixed(1)}% - ${(countryData.RecessionRisk_p80 * 100).toFixed(1)}%]`;
+                                        return `${datasetLabel}: ${(countryData.RecessionRisk_p50 * 100).toFixed(1)}% [${(countryData.RecessionRisk_p05 * 100).toFixed(1)}% - ${(countryData.RecessionRisk_p95 * 100).toFixed(1)}%]`;
                                     }
                                 }
                                 
@@ -1036,14 +1036,14 @@ class RecessionRiskVisualizer {
                                 const dataPoint = filteredData[i];
                                 const countryData = dataPoint[country];
                                 
-                                if (countryData && countryData.recession === 1) {
+                                if (countryData && countryData.Recession === 1) {
                                     let recessionStart = i;
                                     let recessionEnd = i;
                                     
                                     while (recessionEnd < filteredData.length - 1) {
                                         const nextDataPoint = filteredData[recessionEnd + 1];
                                         const nextCountryData = nextDataPoint[country];
-                                        if (nextCountryData && nextCountryData.recession === 1) {
+                                        if (nextCountryData && nextCountryData.Recession === 1) {
                                             recessionEnd++;
                                         } else {
                                             break;
@@ -1084,14 +1084,14 @@ class RecessionRiskVisualizer {
                                     const dataPoint = filteredData[i];
                                     const countryData = dataPoint[country];
                                     
-                                    if (countryData && countryData.recession === 1) {
+                                    if (countryData && countryData.Recession === 1) {
                                         let recessionStart = i;
                                         let recessionEnd = i;
                                         
                                         while (recessionEnd < filteredData.length - 1) {
                                             const nextDataPoint = filteredData[recessionEnd + 1];
                                             const nextCountryData = nextDataPoint[country];
-                                            if (nextCountryData && nextCountryData.recession === 1) {
+                                            if (nextCountryData && nextCountryData.Recession === 1) {
                                                 recessionEnd++;
                                             } else {
                                                 break;
@@ -1165,8 +1165,8 @@ class RecessionRiskVisualizer {
                 labels: labels,
                 datasets: [
                     {
-                        label: 'Upper Bound (p80)',
-                        data: filteredData.map(row => row[country] ? row[country].RecessionRisk_p80 : null),
+                        label: 'Upper Bound (p95)',
+                        data: filteredData.map(row => row[country] ? row[country].RecessionRisk_p95 : null),
                         borderColor: 'transparent',
                         backgroundColor: `${this.colorPalette[0]}26`,
                         fill: '+1',
@@ -1188,8 +1188,8 @@ class RecessionRiskVisualizer {
                         order: 1
                     },
                     {
-                        label: 'Lower Bound (p20)',
-                        data: filteredData.map(row => row[country] ? row[country].RecessionRisk_p20 : null),
+                        label: 'Lower Bound (p05)',
+                        data: filteredData.map(row => row[country] ? row[country].RecessionRisk_p05 : null),
                         borderColor: 'transparent',
                         backgroundColor: 'rgba(0, 0, 0, 0)',
                         fill: 'origin',
@@ -1199,8 +1199,8 @@ class RecessionRiskVisualizer {
                         order: 5
                     },
                     {
-                        label: 'Upper Bound RT (p80)',
-                        data: filteredData.map(row => row[`${country}_OOS`] ? row[`${country}_OOS`].RecessionRisk_p80 : null),
+                        label: 'Upper Bound RT (p95)',
+                        data: filteredData.map(row => row[`${country}_OOS`] ? row[`${country}_OOS`].RecessionRisk_p95 : null),
                         borderColor: 'transparent',
                         backgroundColor: `${this.colorPalette[1]}26`,
                         fill: '+1',
@@ -1222,8 +1222,8 @@ class RecessionRiskVisualizer {
                         order: 2
                     },
                     {
-                        label: 'Lower Bound RT (p20)',
-                        data: filteredData.map(row => row[`${country}_OOS`] ? row[`${country}_OOS`].RecessionRisk_p20 : null),
+                        label: 'Lower Bound RT (p05)',
+                        data: filteredData.map(row => row[`${country}_OOS`] ? row[`${country}_OOS`].RecessionRisk_p05 : null),
                         borderColor: 'transparent',
                         backgroundColor: 'rgba(0, 0, 0, 0)',
                         fill: 'origin',
@@ -1245,10 +1245,10 @@ class RecessionRiskVisualizer {
                 labels: labels,
                 datasets: [
                     {
-                        label: 'Upper Bound (p80)',
+                        label: 'Upper Bound (p95)',
                         data: filteredData.map(row => {
                             const data = row[country];
-                            return data ? data.RecessionRisk_p80 : null;
+                            return data ? data.RecessionRisk_p95 : null;
                         }),
                         borderColor: 'transparent',
                         backgroundColor: `${chartColor}26`,
@@ -1274,10 +1274,10 @@ class RecessionRiskVisualizer {
                         order: 1
                     },
                     {
-                        label: 'Lower Bound (p20)',
+                        label: 'Lower Bound (p05)',
                         data: filteredData.map(row => {
                             const data = row[country];
-                            return data ? data.RecessionRisk_p20 : null;
+                            return data ? data.RecessionRisk_p05 : null;
                         }),
                         borderColor: 'transparent',
                         backgroundColor: 'rgba(0, 0, 0, 0)',
@@ -1298,10 +1298,10 @@ class RecessionRiskVisualizer {
             availableCountries.forEach((country, index) => {
                 const baseOrder = index * 3;
                 
-                // Upper bound (p80)
+                // Upper bound (p95)
                 datasets.push({
-                    label: `${this.countryLabels[country]} Upper (p80)`,
-                    data: filteredData.map(row => row[country] ? row[country].RecessionRisk_p80 : null),
+                    label: `${this.countryLabels[country]} Upper (p95)`,
+                    data: filteredData.map(row => row[country] ? row[country].RecessionRisk_p95 : null),
                     borderColor: 'transparent',
                     backgroundColor: `${this.getAvailableCountryColor(country, availableCountries)}20`,
                     fill: `+1`,
@@ -1325,10 +1325,10 @@ class RecessionRiskVisualizer {
                     order: baseOrder + 1
                 });
                 
-                // Lower bound (p20)
+                // Lower bound (p05)
                 datasets.push({
-                    label: `${this.countryLabels[country]} Lower (p20)`,
-                    data: filteredData.map(row => row[country] ? row[country].RecessionRisk_p20 : null),
+                    label: `${this.countryLabels[country]} Lower (p05)`,
+                    data: filteredData.map(row => row[country] ? row[country].RecessionRisk_p05 : null),
                     borderColor: 'transparent',
                     backgroundColor: 'rgba(0, 0, 0, 0)',
                     fill: index === 0 ? 'origin' : false,
@@ -1417,7 +1417,7 @@ class RecessionRiskVisualizer {
                 currentMonthEl.innerHTML = `
                     <div class="stat-period"><strong>${currentMonth.Time}</strong></div>
                     <div class="stat-value">${(currentData.RecessionRisk_p50 * 100).toFixed(1)}%</div>
-                    <div class="stat-range">[${(currentData.RecessionRisk_p20 * 100).toFixed(1)}% - ${(currentData.RecessionRisk_p80 * 100).toFixed(1)}%]</div>
+                    <div class="stat-range">[${(currentData.RecessionRisk_p05 * 100).toFixed(1)}% - ${(currentData.RecessionRisk_p95 * 100).toFixed(1)}%]</div>
                 `;
             }
 
@@ -1426,7 +1426,7 @@ class RecessionRiskVisualizer {
                     lastMonthEl.innerHTML = `
                         <div class="stat-period"><strong>${lastMonth.Time}</strong></div>
                         <div class="stat-value">${(lastData.RecessionRisk_p50 * 100).toFixed(1)}%</div>
-                        <div class="stat-range">[${(lastData.RecessionRisk_p20 * 100).toFixed(1)}% - ${(lastData.RecessionRisk_p80 * 100).toFixed(1)}%]</div>
+                        <div class="stat-range">[${(lastData.RecessionRisk_p05 * 100).toFixed(1)}% - ${(lastData.RecessionRisk_p95 * 100).toFixed(1)}%]</div>
                     `;
                 } else {
                     lastMonthEl.innerHTML = `<div class="stat-value">--</div><div class="stat-range">--</div>`;
