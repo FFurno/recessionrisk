@@ -546,11 +546,12 @@ class RecessionRiskVisualizer {
 
     downloadCSV() {
         if (this.selectedCountries.length === 1) {
+            
             // Single country - download that country's data based on estimation mode
             const country = this.selectedCountries[0];
             let csvData, filename, countryLabel;
             
-            countryLabel = this.countryLabels[country] || country;
+            countryLabel = country;
             
             if (this.estimationMode === 'realtime') {
                 // Download OOS data
@@ -560,12 +561,12 @@ class RecessionRiskVisualizer {
                 } else {
                     // Fallback to latest if OOS not available
                     csvData = this.countryData[country].csvText;
-                    filename = `recession_risk_${countryLabel.replace(/\s+/g, '_')}.csv`;
+                    filename = `recession_risk_${countryLabel.replace(/\s+/g, '_')}_latest.csv`;
                 }
             } else {
                 // Download latest estimates
                 csvData = this.countryData[country].csvText;
-                filename = `recession_risk_${countryLabel.replace(/\s+/g, '_')}.csv`;
+                filename = `recession_risk_${countryLabel.replace(/\s+/g, '_')}_latest.csv`;
             }
             
             const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
@@ -583,8 +584,9 @@ class RecessionRiskVisualizer {
         } else {
             // Multiple countries - create a combined CSV based on estimation mode
             const combinedCSV = this.generateCombinedCSV();
-            const modeLabel = this.estimationMode === 'realtime' ? '_realtime' : '';
-            const filename = `recession_risk_multiple_countries${modeLabel}.csv`;
+            const modeLabel = this.estimationMode === 'realtime' ? '_realtime' : '_latest';
+            const countryCodes = this.selectedCountries.join('_');
+            const filename = `recession_risk_${countryCodes}${modeLabel}.csv`;
             
             const blob = new Blob([combinedCSV], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement('a');
@@ -610,8 +612,7 @@ class RecessionRiskVisualizer {
 
         let csv = 'Time';
         this.selectedCountries.forEach(country => {
-            const suffix = this.estimationMode === 'realtime' ? '_RealTime' : '_Latest';
-            csv += `,${this.countryLabels[country]}${suffix}_Risk`;
+            csv += `,RecessionRisk_${country}_p50`;
         });
         csv += '\n';
 
@@ -619,7 +620,7 @@ class RecessionRiskVisualizer {
             csv += dataPoint.Time;
             this.selectedCountries.forEach(country => {
                 const countryData = dataPoint[country];
-                const value = countryData ? (countryData.RecessionRisk_p50 * 100).toFixed(1) : '';
+                const value = countryData ? (countryData.RecessionRisk_p50).toFixed(4) : '';
                 csv += `,${value}`;
             });
             csv += '\n';
