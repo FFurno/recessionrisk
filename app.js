@@ -1105,7 +1105,7 @@ class RecessionRiskVisualizer {
                                             const startX = scales.x.getPixelForValue(j);
                                             const endX = scales.x.getPixelForValue(j + 1);
                                             
-                                            ctx.fillStyle = hexToRgba(countryColor, 0.12);
+                                            ctx.fillStyle = hexToRgba(countryColor, 0.25);
                                             ctx.fillRect(
                                                 startX,
                                                 chartArea.top,
@@ -1159,6 +1159,7 @@ class RecessionRiskVisualizer {
         this.currentAvailableCountries = availableCountries;        
         const isSingleCountry = availableCountries.length === 1;
 
+        // Single Country - Both Modes
         if (isSingleCountry && this.estimationMode === 'both') {
             const country = availableCountries[0];
             return {
@@ -1180,7 +1181,7 @@ class RecessionRiskVisualizer {
                         data: filteredData.map(row => row[country] ? row[country].RecessionRisk_p50 : null),
                         borderColor: this.colorPalette[0],
                         backgroundColor: `${this.colorPalette[0]}26`,
-                        borderWidth: 2.5,
+                        borderWidth: 1.8,
                         fill: '+1',
                         tension: 0.2,
                         pointRadius: 0,
@@ -1199,10 +1200,10 @@ class RecessionRiskVisualizer {
                         order: 5
                     },
                     {
-                        label: 'Upper Bound RT (p95)',
+                        label: 'Upper Bound Real-Time (p95)',
                         data: filteredData.map(row => row[`${country}_OOS`] ? row[`${country}_OOS`].RecessionRisk_p95 : null),
                         borderColor: 'transparent',
-                        backgroundColor: `${this.colorPalette[1]}26`,
+                        backgroundColor: `${this.colorPalette[0]}26`,
                         fill: '+1',
                         tension: 0.2,
                         pointRadius: 0,
@@ -1212,9 +1213,10 @@ class RecessionRiskVisualizer {
                     {
                         label: `${this.countryLabels[country]} (Real-Time)`,
                         data: filteredData.map(row => row[`${country}_OOS`] ? row[`${country}_OOS`].RecessionRisk_p50 : null),
-                        borderColor: this.colorPalette[1],
-                        backgroundColor: `${this.colorPalette[1]}26`,
-                        borderWidth: 2.5,
+                        borderColor: this.colorPalette[0],
+                        backgroundColor: `${this.colorPalette[0]}26`,
+                        borderWidth: 1.8,
+                        borderDash: [5, 2],
                         fill: '+1',
                         tension: 0.2,
                         pointRadius: 0,
@@ -1222,7 +1224,7 @@ class RecessionRiskVisualizer {
                         order: 2
                     },
                     {
-                        label: 'Lower Bound RT (p05)',
+                        label: 'Lower Bound Real-Time (p05)',
                         data: filteredData.map(row => row[`${country}_OOS`] ? row[`${country}_OOS`].RecessionRisk_p05 : null),
                         borderColor: 'transparent',
                         backgroundColor: 'rgba(0, 0, 0, 0)',
@@ -1235,6 +1237,7 @@ class RecessionRiskVisualizer {
                 ]
             };
 
+        // Single Country - Latest or Real-time    
         } else if (isSingleCountry) {
             const country = availableCountries[0];
             const modeLabel = this.estimationMode === 'realtime' ? ' (Real-Time)' : '';
@@ -1266,7 +1269,8 @@ class RecessionRiskVisualizer {
                         }),
                         borderColor: chartColor,
                         backgroundColor: `${chartColor}26`,
-                        borderWidth: 2.5,
+                        borderWidth: this.estimationMode === 'realtime' ? 1.8 : 1.8,
+                        borderDash: this.estimationMode === 'realtime' ? [5, 2] : [],
                         fill: '+1',
                         tension: 0.2,
                         pointRadius: 0,
@@ -1289,9 +1293,9 @@ class RecessionRiskVisualizer {
                     }
                 ]
             };
-
+        // Multiple Country - Both Modes
         } else {
-            // Multiple countries - use availableCountries instead of this.selectedCountries
+            // Multiple countries
             const datasets = [];
             const modeLabel = this.estimationMode === 'realtime' ? ' (Real-Time)' : '';
             
@@ -1317,7 +1321,8 @@ class RecessionRiskVisualizer {
                     data: filteredData.map(row => row[country] ? row[country].RecessionRisk_p50 : null),
                     borderColor: this.getAvailableCountryColor(country, availableCountries),
                     backgroundColor: `${this.getAvailableCountryColor(country, availableCountries)}20`,
-                    borderWidth: 2.5,
+                    borderWidth: this.estimationMode === 'realtime' ? 1.8 : 1.8,
+                    borderDash: this.estimationMode === 'realtime' ? [5, 2] : [],
                     fill: `+1`,
                     tension: 0.2,
                     pointRadius: 0,
