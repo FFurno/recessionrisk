@@ -1015,6 +1015,7 @@ class RecessionRiskVisualizer {
                         const filteredData = chart.config._config.filteredData || [];
                         const selectedCountries = chart.config._config.selectedCountries || [];
                         const visualizer = chart.config._config.visualizer;
+                        const estimationMode = chart.config._config.estimationMode;
                         
                         if (!chartArea || !scales.x || !scales.y || filteredData.length === 0) {
                             return;
@@ -1035,16 +1036,35 @@ class RecessionRiskVisualizer {
                             let i = 0;
                             while (i < filteredData.length) {
                                 const dataPoint = filteredData[i];
-                                const countryData = dataPoint[country];
                                 
-                                if (countryData && countryData.Recession === 1) {
+                                // Always use latest data for recession bands, even in real-time mode
+                                let recessionData;
+                                if (estimationMode === 'realtime' || estimationMode === 'both') {
+                                    // For real-time mode, try to get recession data from latest dataset
+                                    const latestCountryData = visualizer.countryData[country]?.data.find(row => row.Time === dataPoint.Time);
+                                    recessionData = latestCountryData || dataPoint[country];
+                                } else {
+                                    // For latest mode, use the existing logic
+                                    recessionData = dataPoint[country];
+                                }
+                                
+                                if (recessionData && recessionData.Recession === 1) {
                                     let recessionStart = i;
                                     let recessionEnd = i;
                                     
+                                    // Look ahead to find the end of the recession period
                                     while (recessionEnd < filteredData.length - 1) {
                                         const nextDataPoint = filteredData[recessionEnd + 1];
-                                        const nextCountryData = nextDataPoint[country];
-                                        if (nextCountryData && nextCountryData.Recession === 1) {
+                                        let nextRecessionData;
+                                        
+                                        if (estimationMode === 'realtime' || estimationMode === 'both') {
+                                            const nextLatestData = visualizer.countryData[country]?.data.find(row => row.Time === nextDataPoint.Time);
+                                            nextRecessionData = nextLatestData || nextDataPoint[country];
+                                        } else {
+                                            nextRecessionData = nextDataPoint[country];
+                                        }
+                                        
+                                        if (nextRecessionData && nextRecessionData.Recession === 1) {
                                             recessionEnd++;
                                         } else {
                                             break;
@@ -1072,7 +1092,6 @@ class RecessionRiskVisualizer {
                                     i++;
                                 }
                             }
-                        // In the recessionBands plugin, replace the multiple countries section:
                         } else {
                             // Multiple countries - use availableCountries and consistent colors
                             const availableCountries = chart.config._config.availableCountries || [];
@@ -1083,16 +1102,32 @@ class RecessionRiskVisualizer {
                                 let i = 0;
                                 while (i < filteredData.length) {
                                     const dataPoint = filteredData[i];
-                                    const countryData = dataPoint[country];
                                     
-                                    if (countryData && countryData.Recession === 1) {
+                                    // Always use latest data for recession bands, even in real-time mode
+                                    let recessionData;
+                                    if (estimationMode === 'realtime') {
+                                        const latestCountryData = visualizer.countryData[country]?.data.find(row => row.Time === dataPoint.Time);
+                                        recessionData = latestCountryData || dataPoint[country];
+                                    } else {
+                                        recessionData = dataPoint[country];
+                                    }
+                                    
+                                    if (recessionData && recessionData.Recession === 1) {
                                         let recessionStart = i;
                                         let recessionEnd = i;
                                         
                                         while (recessionEnd < filteredData.length - 1) {
                                             const nextDataPoint = filteredData[recessionEnd + 1];
-                                            const nextCountryData = nextDataPoint[country];
-                                            if (nextCountryData && nextCountryData.Recession === 1) {
+                                            let nextRecessionData;
+                                            
+                                            if (estimationMode === 'realtime') {
+                                                const nextLatestData = visualizer.countryData[country]?.data.find(row => row.Time === nextDataPoint.Time);
+                                                nextRecessionData = nextLatestData || nextDataPoint[country];
+                                            } else {
+                                                nextRecessionData = nextDataPoint[country];
+                                            }
+                                            
+                                            if (nextRecessionData && nextRecessionData.Recession === 1) {
                                                 recessionEnd++;
                                             } else {
                                                 break;
