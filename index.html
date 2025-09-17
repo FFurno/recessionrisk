@@ -12,7 +12,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>Nowcasting Recession Risk </h1>
+            <h1>Nowcasting Recession Risk</h1>
             <p>Based on "<a href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4706700" style="color: #adb5bd; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">Nowcasting Recession Risk</a>" by Furno and Giannone (2024)</p>
         </div>
         
@@ -20,6 +20,40 @@
             <button class="tab-button active" data-tab="dashboard">Dashboard</button>
             <button class="tab-button" data-tab="faq">FAQ</button>
         </div>
+
+        <div class="header-info-section">
+            <div class="header-stats-line">
+                <span id="header-latest-stats">Latest: --</span>
+            </div>
+            <div class="header-update-line">Last Updated: <span id="last-updated-text">--</span></div>
+            <br>
+            <div class="header-downloads">
+                <button id="download-btn" class="download-button-header">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="7,10 12,15 17,10"/>
+                        <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                    Data
+                </button>                           
+                <button onclick="window.open('full-report.pdf', '_blank')" class="download-button-header">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="7,10 12,15 17,10"/>
+                        <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                    Report
+                </button>                            
+                <button onclick="window.open('https://www.amazon.science/publications/nowcasting-recession-risk', '_blank')" class="download-button-header">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                        <polyline points="15,3 21,3 21,9"/>
+                        <line x1="10" y1="14" x2="21" y2="3"/>
+                    </svg>
+                    Working Paper
+                </button>
+            </div>
+        </div>        
 
         <div class="content">
             <div id="dashboard-tab" class="tab-content active">
@@ -31,91 +65,38 @@
                 <div id="error" class="error" style="display: none;"></div>
                 
                 <div id="chart-section" style="display: none;">
-                    <div class="last-update-line">
-                        <span>Last Updated: <span id="last-updated-text">--</span></span>
-                        <div class="top-downloads">
-                            <button id="download-btn" class="download-button-small">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                                    <polyline points="7,10 12,15 17,10"/>
-                                    <line x1="12" y1="15" x2="12" y2="3"/>
-                                </svg>
-                                Data
-                            </button>                           
-                            <button onclick="window.open('full-report.pdf', '_blank')" class="download-button-small">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                                    <polyline points="7,10 12,15 17,10"/>
-                                    <line x1="12" y1="15" x2="12" y2="3"/>
-                                </svg>
-                                Report
-                            </button>                            
-                            <button onclick="window.open('https://www.amazon.science/publications/nowcasting-recession-risk', '_blank')" class="download-button-small">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-                                    <polyline points="15,3 21,3 21,9"/>
-                                    <line x1="10" y1="14" x2="21" y2="3"/>
-                                </svg>
-                                Working Paper
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class="control-panel">
-                        <!-- Enhanced Countries Box -->
-                        <div class="control-box">
-                            <div class="control-box-title">Countries</div>
-                            <div class="control-box-content">
-                                <div class="country-dropdown">
-                                    <div class="dropdown-selected" id="country-dropdown-selected">
-                                        <span id="selected-count">1 selected</span>
-                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <polyline points="6,9 12,15 18,9"></polyline>
-                                        </svg>
-                                    </div>
-                                    <div class="dropdown-menu" id="country-dropdown-menu">
-                                        <label><input type="checkbox" value="US" checked> United States</label>
-                                        <label><input type="checkbox" value="EA"> Euro Area</label>
-                                        <label><input type="checkbox" value="DE"> Germany</label>
-                                        <label><input type="checkbox" value="FRA"> France</label>
-                                        <label><input type="checkbox" value="SPA"> Spain</label>
-                                        <label><input type="checkbox" value="ITA"> Italy</label>
-                                    </div>
+                    <div class="countries-control">
+                        <div class="countries-control-box">
+                            <div class="country-dropdown">
+                                <div class="dropdown-selected" id="country-dropdown-selected">
+                                    <span id="selected-count">1 selected</span>
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="6,9 12,15 18,9"></polyline>
+                                    </svg>
                                 </div>
-                                
-                                <div class="estimation-method">
-                                    <label>
-                                        <input type="radio" name="estimation" value="latest" checked>
-                                        <span>Latest</span>
-                                    </label>
-                                    <label>
-                                        <input type="radio" name="estimation" value="realtime">
-                                        <span>Real-Time</span>
-                                    </label>
-                                    <label>
-                                        <input type="radio" name="estimation" value="both" id="both-option">
-                                        <span>Both</span>
-                                    </label>
+                                <div class="dropdown-menu" id="country-dropdown-menu">
+                                    <label><input type="checkbox" value="US" checked> United States</label>
+                                    <label><input type="checkbox" value="EA"> Euro Area</label>
+                                    <label><input type="checkbox" value="DE"> Germany</label>
+                                    <label><input type="checkbox" value="FRA"> France</label>
+                                    <label><input type="checkbox" value="SPA"> Spain</label>
+                                    <label><input type="checkbox" value="ITA"> Italy</label>
                                 </div>
-                                
                             </div>
-                        </div>
-
-                        <!-- Latest Month Box -->
-                        <div class="control-box">
-                            <div class="control-box-title">Latest Month</div>
-                            <div class="control-box-content" id="current-month-stat">
-                                <div class="stat-value">--</div>
-                                <div class="stat-range">--</div>
-                            </div>
-                        </div>
-
-                        <!-- Previous Month Box -->
-                        <div class="control-box">
-                            <div class="control-box-title">Previous Month</div>
-                            <div class="control-box-content" id="last-month-stat">
-                                <div class="stat-value">--</div>
-                                <div class="stat-range">--</div>
+                            
+                            <div class="estimation-method">
+                                <label>
+                                    <input type="radio" name="estimation" value="latest" checked>
+                                    <span>Latest</span>
+                                </label>
+                                <label>
+                                    <input type="radio" name="estimation" value="realtime">
+                                    <span>Real-Time</span>
+                                </label>
+                                <label>
+                                    <input type="radio" name="estimation" value="both" id="both-option">
+                                    <span>Both</span>
+                                </label>
                             </div>
                         </div>
                     </div>

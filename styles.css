@@ -45,30 +45,90 @@ body {
     font-weight: 400;
 }
 
-.content {
-    padding: 40px;
+.header-info-section {
+    margin: 0;
+    padding: 25px 40px;
+    background: white;
+    text-align: left;
 }
 
-/* Enhanced control panel with estimation method */
-.control-panel {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 15px;
-    margin-bottom: 30px;
+.header-update-line {
+    font-size: 1rem;
+    color: #6c757d;
+    margin-bottom: 8px;
 }
 
-.control-box {
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-    border: 1px solid #dee2e6;
-    border-radius: 10px;
-    padding: 10px;
-    text-align: center;
+.header-stats-line {
+    font-size: 1rem; /* Reduce from 1.1rem */
+    color: #6c757d; /* Change from #343a40 to lighter gray */
+    font-weight: normal; /* Remove bold weight */
+    margin-bottom: 15px;
+}
+
+.header-downloads {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-start;
+}
+
+.download-button-header {
+    background: linear-gradient(135deg, #0072bd 0%, #005a96 100%);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
     transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
 }
 
-.control-box:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+.download-button-header:hover {
+    background: linear-gradient(135deg, #005a96 0%, #004678 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 114, 189, 0.3);
+}
+
+.countries-control {
+    margin-bottom: 0px;
+}
+
+.countries-control-box {
+    background: white; 
+    border: 1px solid white;
+    border-radius: 10px;
+    padding: 5px; /* Increased padding */
+    display: flex;
+    align-items: center;
+    justify-content: flex-start; /* Changed from space-between */
+    gap: 35px; /* Reduced gap */
+}
+
+.countries-control-box .country-dropdown {
+    flex: 1;
+    max-width: 500px; /* Increased from 300px */
+    min-width: 400px; /* Added minimum width */
+}
+
+.countries-control-box .estimation-method::before {
+    content: '';
+    width: 1px;
+    height: 40px;
+    background: #dee2e6;
+    margin-right: 15px;
+}
+
+
+
+.countries-control-box .estimation-method {
+    flex: 0 0 auto;
+}
+
+.content {
+    padding: 20px 40px 40px 40px;
 }
 
 .control-box-title {
@@ -96,22 +156,23 @@ body {
     position: relative;
     width: 100%;
     z-index: 1000;
-    margin-bottom: 15px;
+    margin-bottom: 0;
 }
 
 .dropdown-selected {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 8px 12px;
+    padding: 12px 16px; /* Increased padding */
     border: 2px solid #dee2e6;
     border-radius: 6px;
     background: white;
     cursor: pointer;
-    font-size: 0.95rem;
+    font-size: 1rem; /* Increased font size */
     transition: all 0.3s ease;
     position: relative;
     z-index: 1001;
+    min-height: 48px; /* Added minimum height */
 }
 
 .dropdown-selected:hover {
@@ -156,8 +217,8 @@ body {
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 8px 12px;
-    font-size: 0.9rem;
+    padding: 10px 16px; /* Increased padding */
+    font-size: 0.95rem; /* Slightly increased font size */
     cursor: pointer;
     transition: background-color 0.2s ease;
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
@@ -176,7 +237,6 @@ body {
     height: 16px;
     accent-color: #0072bd;
 }
-
 
 /* Chart Error Message Styling */
 .chart-error-message {
@@ -210,13 +270,13 @@ body {
     line-height: 1.4;
 }
 
-
 /* New estimation method selector */
 .estimation-method {
     display: flex;
-    flex-direction: row; /* Changed from column */
-    gap: 15px; /* Increased gap for horizontal spacing */
+    flex-direction: row;
+    gap: 15px;
     text-align: left;
+    align-items: center; /* Added for better alignment */
 }
 
 /* Responsive adjustment for small screens */
@@ -225,27 +285,38 @@ body {
         flex-direction: column;
         gap: 8px;
     }
+    
+    .countries-control-box {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .countries-control-box .country-dropdown {
+        max-width: none;
+        min-width: auto;
+    }
 }
 
 .estimation-method label {
     display: flex;
     align-items: center;
-    gap: 6px; /* Reduced gap between radio and text */
-    font-size: 0.85rem;
+    gap: 6px;
+    font-size: 0.9rem; /* Slightly increased font size */
     cursor: pointer;
-    padding: 4px 0;
-    white-space: nowrap; /* Prevent text wrapping */
+    padding: 6px 8px; /* Added padding for better touch targets */
+    white-space: nowrap;
+    border-radius: 4px; /* Added border radius for better appearance */
+    transition: background-color 0.2s ease;
 }
-
-
 
 .estimation-method label:hover {
     color: #0072bd;
+    background-color: rgba(0, 114, 189, 0.05);
 }
 
 .estimation-method input[type="radio"] {
-    width: 14px;
-    height: 14px;
+    width: 16px; /* Slightly increased size */
+    height: 16px;
     accent-color: #0072bd;
 }
 
@@ -259,7 +330,6 @@ body {
     color: #6c757d;
     opacity: 0.6;
 }
-
 
 /* Stats box specific styling */
 .stat-value {
@@ -363,58 +433,9 @@ body {
     display: inline-flex;
 }
 
-/* Last update line styling */
-.last-update-line {
-    margin-bottom: 20px;
-    padding: 12px 0;
-    font-size: 1.1rem;
-    color: #6c757d;
-    text-align: left;
-    border-bottom: 1px solid #e9ecef;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.last-update-line span {
-    font-weight: 500;
-}
-
 #last-updated-text {
     color: #0072bd;
     font-weight: 600;
-}
-
-.top-downloads {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-}
-
-.download-button-small {
-    background: linear-gradient(135deg, #0072bd 0%, #005a96 100%);
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 6px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.download-button-small:hover {
-    background: linear-gradient(135deg, #005a96 0%, #004678 100%);
-    transform: translateY(-1px);
-    box-shadow: 0 3px 8px rgba(0, 114, 189, 0.3);
-}
-
-.download-button-small svg {
-    width: 18px;
-    height: 18px;
 }
 
 .chart-container {
@@ -579,94 +600,135 @@ body {
     border-bottom: 3px solid transparent;
     transition: all 0.3s ease;
     text-transform: uppercase;
-letter-spacing: 0.5px;
-}.tab-button:hover {
-background: rgba(0, 114, 189, 0.05);
-color: #0072bd;
-}.tab-button.active {
-color: #0072bd;
-border-bottom-color: #0072bd;
-background: rgba(0, 114, 189, 0.08);
-}.tab-content {
-display: none;
-}.tab-content.active {
-display: block;
-}/* FAQ Styling */
+    letter-spacing: 0.5px;
+}
+
+.tab-button:hover {
+    background: rgba(0, 114, 189, 0.05);
+    color: #0072bd;
+}
+
+.tab-button.active {
+    color: #0072bd;
+    border-bottom-color: #0072bd;
+    background: rgba(0, 114, 189, 0.08);
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* FAQ Styling */
 .faq-main-title {
-font-variant: small-caps;
-}.faq-simple-answer {
-text-align: justify;
-}.faq-simple-answer a {
-color: #0072bd;
-text-decoration: none;
-}.faq-simple-answer a:hover {
-text-decoration: underline;
-}.faq-simple-container {
-max-width: 800px;
-margin: 0 auto;
-padding: 40px;
-}.faq-main-title {
-color: #343a40;
-font-size: 2rem;
-font-weight: 600;
-margin-bottom: 40px;
-text-align: center;
-border-bottom: 2px solid #0072bd;
-padding-bottom: 15px;
-}.faq-simple-item {
-margin-bottom: 30px;
-}.faq-simple-question {
-font-weight: 700;
-color: #343a40;
-margin-bottom: 8px;
-font-size: 1.1rem;
-line-height: 1.4;
-}.faq-simple-answer {
-color: #6c757d;
-line-height: 1.6;
-font-size: 1rem;
-margin-left: 0;
-}/* Responsive design */
-@media (max-width: 1200px) {
-.control-panel {
-grid-template-columns: repeat(3, 1fr);
+    font-variant: small-caps;
 }
-}@media (max-width: 900px) {
-.control-panel {
-grid-template-columns: repeat(2, 1fr);
+
+.faq-simple-answer {
+    text-align: justify;
 }
-}@media (max-width: 768px) {
-.control-panel {
-grid-template-columns: 1fr;
-}.header h1 {
+
+.faq-simple-answer a {
+    color: #0072bd;
+    text-decoration: none;
+}
+
+.faq-simple-answer a:hover {
+    text-decoration: underline;
+}
+
+.faq-simple-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px;
+}
+
+.faq-main-title {
+    color: #343a40;
     font-size: 2rem;
-}.content {
-    padding: 25px;
-}.chart-container {
-    height: 450px;
-    padding: 15px;
-}.last-update-line {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-}.top-downloads {
-    align-self: stretch;
-    justify-content: center;
-}.download-button-small {
-    flex: 1;
-    justify-content: center;
-    max-width: 100px;
-}.tab-button {
-    padding: 12px 20px;
-    font-size: 0.9rem;
-}.faq-simple-container {
-    padding: 25px;
-}.faq-main-title {
-    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 40px;
+    text-align: center;
+    border-bottom: 2px solid #0072bd;
+    padding-bottom: 15px;
 }
-}@media (max-width: 480px) {
-.download-row-split {
-flex-direction: column;
-gap: 6px;
+
+.faq-simple-item {
+    margin-bottom: 30px;
 }
+
+.faq-simple-question {
+    font-weight: 700;
+    color: #343a40;
+    margin-bottom: 8px;
+    font-size: 1.1rem;
+    line-height: 1.4;
+}
+
+.faq-simple-answer {
+    color: #6c757d;
+    line-height: 1.6;
+    font-size: 1rem;
+    margin-left: 0;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .control-panel {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .header h1 {
+        font-size: 2rem;
+    }
+    
+    .content {
+        padding: 25px;
+    }
+    
+    .chart-container {
+        height: 450px;
+        padding: 15px;
+    }
+    
+    .last-update-line {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    
+    .top-downloads {
+        align-self: stretch;
+        justify-content: center;
+    }
+    
+    .download-button-small {
+        flex: 1;
+        justify-content: center;
+        max-width: 100px;
+    }
+    
+    .tab-button {
+        padding: 12px 20px;
+        font-size: 0.9rem;
+    }
+    
+    .faq-simple-container {
+        padding: 25px;
+    }
+    
+    .faq-main-title {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .download-row-split {
+        flex-direction: column;
+        gap: 6px;
+    }
 }

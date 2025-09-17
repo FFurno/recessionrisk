@@ -247,6 +247,7 @@ class RecessionRiskVisualizer {
             this.setupControls();
             this.createChart();
             this.showStats();
+            this.showHeaderStats();
             this.hideLoading();
             this.updateLastModified();
         } catch (error) {
@@ -441,6 +442,7 @@ class RecessionRiskVisualizer {
                 console.log('🔄 After createChart call');
                 
                 this.showStats();
+                this.showHeaderStats();
             });
         });
 
@@ -463,7 +465,7 @@ class RecessionRiskVisualizer {
         
         if (selectedCount === 0) {
             selectedCountEl.textContent = 'Select countries';
-        } else if (selectedCount <= 3) {
+        } else if (selectedCount <= 10) {
             // Show individual country names up to 3 countries
             const countryNames = selectedCountries.map(country => this.countryLabels[country]);
             selectedCountEl.textContent = countryNames.join(', ');
@@ -522,6 +524,7 @@ class RecessionRiskVisualizer {
         
         this.createChart(); // This will now properly check for error state
         this.showStats();
+        this.showHeaderStats();
     }
 
     updateEstimationMethodAvailability() {
@@ -1401,6 +1404,7 @@ class RecessionRiskVisualizer {
         
         this.createChart(true);
         this.showStats();
+        this.showHeaderStats();
     }
 
     showStats() {
@@ -1513,6 +1517,63 @@ class RecessionRiskVisualizer {
             }
         }
     }
+
+    showHeaderStats() {
+        // Don't show stats if we're in error state
+        if (this.hasOOSError) {
+            const headerStatsEl = document.getElementById('header-latest-stats');
+            if (headerStatsEl) {
+                headerStatsEl.textContent = 'Latest: --';
+            }
+            return;
+        }
+
+        // Always show stats from latest estimates (unchanged behavior)
+        const allTimePoints = this.getAllTimePoints();
+        if (allTimePoints.length === 0) {
+            const headerStatsEl = document.getElementById('header-latest-stats');
+            if (headerStatsEl) {
+                headerStatsEl.textContent = 'Latest: --';
+            }
+            return;
+        }
+
+        // Get the latest available data points from latest estimates
+        const latestTimePoint = allTimePoints[allTimePoints.length - 1];
+        const latestDataPoint = { Time: latestTimePoint };
+        this.selectedCountries.forEach(country => {
+            // Always use latest estimates for header stats
+            const countryData = this.countryData[country]?.data.find(row => row.Time === latestTimePoint);
+            latestDataPoint[country] = countryData || null;
+        });
+
+        const headerStatsEl = document.getElementById('header-latest-stats');
+        if (headerStatsEl) {
+            let statsText = `Latest (${latestTimePoint}): `;
+            
+            const countryStats = [];
+            this.selectedCountries.forEach(country => {
+                const data = latestDataPoint[country];
+                if (data) {
+                    const countryCode = country === 'US' ? 'US' : 
+                                    country === 'EA' ? 'EA' : 
+                                    country === 'DE' ? 'DE' : 
+                                    country === 'FRA' ? 'FR' : 
+                                    country === 'SPA' ? 'ES' : 
+                                    country === 'ITA' ? 'IT' : country;
+                    countryStats.push(`<strong>${countryCode} ${(data.RecessionRisk_p50 * 100).toFixed(1)}%</strong>`);
+                }
+            });
+            
+            if (countryStats.length > 0) {
+                statsText += countryStats.join(' | ');
+            } else {
+                statsText = 'Latest: --';
+            }
+            
+            headerStatsEl.innerHTML = statsText;
+        }
+    }    
 
     hideLoading() {
         document.getElementById('loading').style.display = 'none';
