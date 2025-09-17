@@ -1,4 +1,4 @@
-// Fixed Canvas Event Handler
+// Plugin for time range selector
 const timeRangeSelector = {
     id: 'timeRangeSelector',
     
@@ -914,10 +914,11 @@ class RecessionRiskVisualizer {
                         display: true,
                         position: 'top',
                         labels: {
-                            usePointStyle: true,
+                            usePointStyle: false, // This will show lines instead of points
                             padding: 20,
-                            filter: function(legendItem) {
-                                return !legendItem.text.includes('Upper') && !legendItem.text.includes('Lower');
+                            filter: function(legendItem, chartData) {
+                                const dataset = chartData.datasets[legendItem.datasetIndex];
+                                return !dataset.label.includes('Upper') && !dataset.label.includes('Lower');
                             }
                         }
                     },
