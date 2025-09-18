@@ -20,43 +20,44 @@
             <button class="tab-button active" data-tab="dashboard">Dashboard</button>
             <button class="tab-button" data-tab="faq">FAQ</button>
         </div>
-
-        <div class="header-info-section">
-            <div class="header-stats-line">
-                <span id="header-latest-stats">Latest: --</span>
-            </div>
-            <div class="header-update-line">Last Updated: <span id="last-updated-text">--</span></div>
-            <br>
-            <div class="header-downloads">
-                <button id="download-btn" class="download-button-header">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                        <polyline points="7,10 12,15 17,10"/>
-                        <line x1="12" y1="15" x2="12" y2="3"/>
-                    </svg>
-                    Data
-                </button>                           
-                <button onclick="window.open('full-report.pdf', '_blank')" class="download-button-header">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                        <polyline points="7,10 12,15 17,10"/>
-                        <line x1="12" y1="15" x2="12" y2="3"/>
-                    </svg>
-                    Report
-                </button>                            
-                <button onclick="window.open('https://www.amazon.science/publications/nowcasting-recession-risk', '_blank')" class="download-button-header">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-                        <polyline points="15,3 21,3 21,9"/>
-                        <line x1="10" y1="14" x2="21" y2="3"/>
-                    </svg>
-                    Working Paper
-                </button>
-            </div>
-        </div>        
+     
 
         <div class="content">
             <div id="dashboard-tab" class="tab-content active">
+                <div class="header-info-section">
+                    <div class="header-stats-line">
+                        <span id="header-latest-stats">Latest: --</span>
+                    </div>
+                    <div class="header-update-line">Last Updated: <span id="last-updated-text">--</span></div>
+                    <br>
+                    <div class="header-downloads">
+                        <button id="download-btn" class="download-button-header">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="7,10 12,15 17,10"/>
+                                <line x1="12" y1="15" x2="12" y2="3"/>
+                            </svg>
+                            Data
+                        </button>                           
+                        <button onclick="window.open('full-report.pdf', '_blank')" class="download-button-header">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="7,10 12,15 17,10"/>
+                                <line x1="12" y1="15" x2="12" y2="3"/>
+                            </svg>
+                            Report
+                        </button>                            
+                        <button onclick="window.open('https://www.amazon.science/publications/nowcasting-recession-risk', '_blank')" class="download-button-header">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                                <polyline points="15,3 21,3 21,9"/>
+                                <line x1="10" y1="14" x2="21" y2="3"/>
+                            </svg>
+                            Working Paper
+                        </button>
+                    </div>
+                </div>   
+                
                 <div id="loading" class="loading">
                     <div class="loading-spinner"></div>
                     <p>Processing data...</p>

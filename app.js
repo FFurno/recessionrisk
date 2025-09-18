@@ -1549,7 +1549,7 @@ class RecessionRiskVisualizer {
 
         const headerStatsEl = document.getElementById('header-latest-stats');
         if (headerStatsEl) {
-            let statsText = `Latest (${latestTimePoint}): `;
+            let statsText = `<strong>${latestTimePoint} (Latest):</strong> `;
             
             const countryStats = [];
             this.selectedCountries.forEach(country => {
