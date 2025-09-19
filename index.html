@@ -128,7 +128,7 @@
                     
                     <div class="faq-simple-item">
                         <div class="faq-simple-question">Q: What is the goal of the recession risk nowcast?</div>
-                        <div class="faq-simple-answer">A: Timely knowledge of whether the economy is experiencing a broad-based decline in economic activity is a key input to a variety of decision-making processes. <a href="https://doi.org/10.4337/9781035310050.00011" target="_blank">Furno and Giannone (2024)</a> show that recessions are characterized by the joint occurence of soft economic data and tight financial conditions: the recession risk nowcast leverages this insight to produce timely and reliable estimates of the probability that the economy is undergoing a recession. </div>
+                        <div class="faq-simple-answer">A: Timely knowledge of whether the economy is experiencing a broad-based decline in economic activity is a key input to a variety of decision-making processes. <a href="https://doi.org/10.4337/9781035310050.00011" target="_blank">Furno and Giannone (2024)</a> show that recessions are characterized by the joint occurence of soft economic data and tight financial conditions: the recession risk nowcast leverages this insight to produce timely and reliable estimates of the probability that the economy is undergoing a recession. The nowcast is available the first business day after the reference month closes, and is as accurate as professional forecasters at identifying expansions versus contractions in real-time.</div>
                     </div>
 
                     <div class="faq-simple-item">
@@ -138,49 +138,75 @@
 
                     <div class="faq-simple-item">
                         <div class="faq-simple-question">Q: What are the input data?</div>
-                        <div class="faq-simple-answer">A: The bayesian logit model combines macroeconomic and financial indicators specific to each region or country. For the US, it uses the ISM PMI Manufacturing and the Composite Indicator of Systemic Stress (CISS). The ISM PMI Manufacturing is a monthly survey of purchasing managers at manufacturing companies that measures business conditions and economic activity in the manufacturing sector. For each European region and country (Euro Area, Germany, France, Spain, and Italy), it uses their respective Economic Sentiment Indicator (ESI) paired with their respective CISS. The ESI captures real economic activity through comprehensive business and consumer surveys, while the CISS measures financial market stress across bonds, equities, money markets, foreign exchange, and financial intermediaries.</div>
+                        <div class="faq-simple-answer">A: The model combines macroeconomic and financial conditions specific to each region or country. For the US, it uses the <a href="https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/" target="_blank">ISM PMI Manufacturing</a> and the <a href="https://doi.org/10.1093/rof/rfaf013" target="_blank">Composite Indicator of Systemic Stress (CISS)</a>. The ISM PMI Manufacturing is a monthly diffusion index based on surveys of purchasing managers at manufacturing companies, measuring key business conditions like new orders, production, and employment. For each European region and country (Euro Area, Germany, France, Spain, and Italy), the model uses their respective <a href="https://economy-finance.ec.europa.eu/economic-forecast-and-surveys/business-and-consumer-surveys/latest-business-and-consumer-surveys_en" target="_blank">Economic Sentiment Indicator (ESI)</a> paired with their respective CISS. The ESI captures real economic activity through surveys across industry (40%), services (30%), consumers (20%), retail (5%), and construction (5%). The CISS measures financial market stress across five key segments: bonds, equities, money markets, foreign exchange, and financial intermediaries, using a methodology that accounts for cross-market correlations.</div>
                     </div>
 
                     <div class="faq-simple-item">
                         <div class="faq-simple-question">Q: Why do you include financial conditions alongside economic indicators?</div>
-                        <div class="faq-simple-answer">A: Financial conditions provide crucial complementary information about the current state of the economy. <a href="https://doi.org/10.4337/9781035310050.00011" target="_blank">Furno and Giannone (2024)</a> show that financial stress often signals economic distress in real-time, sometimes before it shows up in traditional economic data. For instance, the model picked up high recession risk in late 2008 during the Lehman Brothers bankruptcy, which was later confirmed as part of the Great Recession. This is also consistent with the role played by financial conditions in Growth-at-Risk estimates, as shown by <a href="https://www.aeaweb.org/articles?id=10.1257/aer.20161923" target="_blank">Adrian, Boyarchenko, and Giannone (2019)</a>.</div>
+                        <div class="faq-simple-answer">A: Financial conditions provide crucial complementary information about the current state of the economy. <a href="https://doi.org/10.4337/9781035310050.00011" target="_blank">Furno and Giannone (2024)</a> show that financial stress often signals economic distress in real-time, sometimes before it shows up in traditional economic data. For instance, the model picked up high recession risk in late 2008 during the Lehman Brothers bankruptcy, which was later confirmed as part of the Great Recession. This is also consistent with the role played by financial conditions in Growth-at-Risk estimates, as shown by <a href="https://www.aeaweb.org/articles?id=10.1257/aer.20161923" target="_blank">Adrian, Boyarchenko, and Giannone (2019)</a>.
+                        
+                        <div class="faq-figure">
+                            <img src="./Figure1_US_EA.png" alt="Macroeconomic and Financial Conditions during Recessions and Expansions" class="faq-image">
+                            <div class="faq-caption">The chart above illustrates this relationship for the United States and Euro Area, showing how recessions (blue dots) are characterized by both weak economic activity and elevated financial stress, while expansions (orange dots) show the opposite pattern. The minimal overlap between the two distributions demonstrates why examining both indicators together improves recession detection.</div>
+                        </div>
+                        </div>
                     </div>
 
                     <div class="faq-simple-item">
                         <div class="faq-simple-question">Q: How are recessions measured?</div>
-                        <div class="faq-simple-answer">A: Official recession dates are determined by national business cycle dating committees: the NBER (National Bureau of Economic Research) for the US, CEPR (Centre for Economic Policy Research) for the Euro Area, the German Council of Economic Experts (GCEE) for Germany, the French Business Cycle Dating Committee (AFSE) for France, and the Spanish Business Cycle Dating Committee (AEE) for Spain. Since Italy does not have a business cycle dating committee, the Euro Area CEPR dates are used. These committees identify periods of "significant decline in economic activity that is spread across the economy and lasts more than a few months." These official recession periods are represented on our charts as shaded vertical bands.</div>
+                        <div class="faq-simple-answer">A: Official recession dates are determined by national business cycle dating committees: the <a href="https://www.nber.org/research/business-cycle-dating" target="_blank">NBER (National Bureau of Economic Research)</a> for the US, <a href="https://eabcn.org/dbc/home" target="_blank">CEPR (Centre for Economic Policy Research)</a> for the Euro Area, the <a href="https://www.sachverstaendigenrat-wirtschaft.de/en/topics/business-cycles-and-growth/konjunkturzyklus-datierung.html" target="_blank">German Council of Economic Experts (GCEE)</a> for Germany, the <a href="https://www.afse.fr/fr/cycles-eco/english-version-500228" target="_blank">French Business Cycle Dating Committee (AFSE)</a> for France, and the <a href="https://www.asesec.org/CFCweb/index.php/en/" target="_blank">Spanish Business Cycle Dating Committee (AEE)</a> for Spain. Since Italy does not have a business cycle dating committee, the Euro Area CEPR dates are used. These committees identify periods of "significant decline in economic activity that is spread across the economy and lasts more than a few months". These official recession periods are represented on our charts as shaded vertical bands.</div>
                     </div>
 
                     <div class="faq-simple-item">
                         <div class="faq-simple-question">Q: What is the current modeling strategy?</div>
-                        <div class="faq-simple-answer">A: TBD.</div>
+                        <div class="faq-simple-answer">A: The recession risk nowcast uses a Bayesian logit model that combines one macroeconomic indicator and one financial indicator for each country or region. For the US, the model uses the ISM PMI Manufacturing (macroeconomic) and the Composite Indicator of Systemic Stress or CISS (financial). For European countries and the Euro Area, it uses the Economic Sentiment Indicator or ESI (macroeconomic) paired with the CISS (financial). The model estimates the probability that the economy is currently in recession by projecting official recession dates onto these two predictors. The Bayesian framework naturally incorporates parameter uncertainty, providing not just point estimates but also confidence intervals around the recession probability.</div>
                     </div>
 
                     <div class="faq-simple-item">
                         <div class="faq-simple-question">Q: What is the estimation sample?</div>
-                        <div class="faq-simple-answer">A: The recession risk estimates use data starting from different periods for each region/country: 1980:m1 for the US, 1985:m1 for the Euro Area and Germany, 1985:m2 for France, 1991:m7 for Spain, and 1986:m1 for Italy. All estimates run through the latest available month. The reported estimates are produced with a pseudo out-of-sample expanding window approach, to highlight the model's stability over time and its accuracy in real-time conditions. Importantly, a 24-month estimation delay is applied when estimating the model to account for the inherent uncertainty in classifying periods as recessions or expansions in real-time, since official recession announcements typically come with significant delays.</div>
+                        <div class="faq-simple-answer">A: The recession risk estimates use data starting from different periods for each region/country: 1980:m1 for the US, 1985:m1 for the Euro Area and Germany, 1985:m2 for France, 1991:m7 for Spain, and 1986:m1 for Italy. The "latest" estimates run through the latest available month. The "real-time" estimates, instead, are produced with a pseudo out-of-sample expanding window approach, to highlight the model's stability over time and its accuracy in real-time conditions. Importantly, a 24-month estimation delay is applied in both cases to account for the inherent uncertainty in classifying periods as recessions or expansions in real-time, since official recession announcements typically come with significant delays.</div>
                     </div>
 
                     <div class="faq-simple-item">
-                        <div class="faq-simple-question">Q: How accurate are these estimates compared to other methods?</div>
-                        <div class="faq-simple-answer">A: The model demonstrates strong accuracy in identifying both recessions and expansions. When benchmarked against the Survey of Professional Forecasters for the US, the nowcast shows similar ability to identify economic downturns but is more accurate at correctly identifying periods of expansion - meaning it better identifies periods of expansion.</div>
+                        <div class="faq-simple-question">Q: How accurate is the model compared to other approaches?</div>
+                        <div class="faq-simple-answer">A: The model demonstrates strong accuracy in identifying both recessions and expansions. When benchmarked against the Survey of Professional Forecasters for the US, the nowcast shows similar ability to identify economic downturns but is more accurate at correctly identifying periods of expansion - meaning it produces fewer false alarms during normal economic times.
+
+                        The nowcast also compares favorably to popular unemployment-based recession indicators, such as the Sahm Rule, which signals a recession when the three-month average unemployment rate rises 0.5 percentage points above its 12-month low. While both approaches accurately identify the beginning of recessions, with the recession risk nowcast being slightly more timely, the nowcast proves more useful at detecting the end of recessions and the beginning of recoveries. This advantage likely stems from the fact that unemployment is a lagging indicator that tends to improve only after economic recovery is already underway, whereas the financial and survey-based indicators can capture turning points more quickly.</div>
                     </div>
+
 
                     <div class="faq-simple-item">
                         <div class="faq-simple-question">Q: Are these estimates revised, and how reliable are they in real-time?</div>
-                        <div class="faq-simple-answer">A: The estimates are subject to minimal revisions because the underlying data sources are timely and stable. The CISS uses financial market prices (which aren't revised), and the PMI/ESI surveys have only minor seasonal adjustments. Tests using real-time data vintages are available in <a href="https://doi.org/10.4337/9781035310050.00011" target="_blank">Furno and Giannone (2024)</a> and confirm high stability over time. The correlation between initial estimates and final estimates is 0.99 for the US and 0.98 for the Euro Area, confirming their reliability for real-time decision making.</div>
+                        <div class="faq-simple-answer">A: The estimates are subject to minimal revisions because the underlying data sources are timely and stable. The CISS uses financial market prices (which are not revised), and the PMI/ESI surveys have only minor seasonal adjustments. Tests using real-time data vintages are available in <a href="https://doi.org/10.4337/9781035310050.00011" target="_blank">Furno and Giannone (2024)</a> and confirm high stability over time. The correlation between initial estimates and final estimates is 0.99 for the US and 0.98 for the Euro Area, confirming their reliability for real-time decision making.
+                        
+                        <div class="faq-figure">
+                            <img src="./Figure2_vintages.png" alt="Recession Risk Stability across Vintages" class="faq-image">
+                            <div class="faq-caption">The chart above highlights the stability of the recession risk estimates across vintages of the Economic Sentiment Indicator (ESI) for the Euro Area.</div>
+                        </div>                        
+                        
+                        </div>
                     </div>
 
                     <div class="faq-simple-item">
                         <div class="faq-simple-question">Q: Can users obtain the data underlying this analysis?</div>
-                        <div class="faq-simple-answer">A: TBD.</div>
-                    </div>                    
+                        <div class="faq-simple-answer">A: Yes, the recession risk estimates can be downloaded directly from this website using the "Data" button in the dashboard. The downloaded files contain the time series of recession probabilities (median, 5th and 95th percentiles) for your selected countries and estimation method.
+                        
+                        The underlying input data has mixed availability: the Composite Indicator of Systemic Stress (CISS) is freely available from the ECB, and the Economic Sentiment Indicator is available from the European Commission. However, the ISM PMI Manufacturing data requires a subscription. For researchers, a complete replication package including code and documentation is available on <a href="https://github.com/amazon-science/nowcasting-recession-risk" target="_blank">GitHub</a>.</div>
+                    </div>  
+                    
+                    <div class="faq-simple-item">
+                        <div class="faq-simple-question">Q: What do people say about the nowcast?</div>
+                        <div class="faq-simple-answer">A: The recession risk nowcast has received coverage from Bloomberg (<a href="https://www.bloomberg.com/news/articles/2024-02-07/amazon-economists-tout-new-model-to-call-recessions-in-real-time" target="_blank">here</a> and <a href="https://www.bloomberg.com/news/newsletters/2024-02-08/world-economy-latest-us-trade-revamp" target="_blank">here</a>), which has also extended the methodology to additional countries. More recently, it was featured by Menzie Chinn in <a href="https://econbrowser.com/archives/2025/04/recession-now-the-message-from-final-revd-michigan-expectations-vs-pmi-and-ciss" target="_blank">this</a> Econbrowser post as part of the discussion on the state of the economy following April 2025's tariff announcements. 
+
+                        </div>
+                    </div>                      
 
                     <div class="faq-simple-item">
                         <div class="faq-simple-question">Q: How should I cite this work?</div>
                         <div class="faq-simple-answer">
-                            A: Please cite as: <br><br>
-                            Furno, Francesco, and Domenico Giannone. <i>Nowcasting Recession Risk</i>. <i>Research Methods and Applications on Macroeconomic Forecasting</i>, 2024.
+                            A: Furno, F., & Giannone, D. (2024). Nowcasting recession risk. <em>Handbook of Research Methods and Applications in Macroeconomic Forecasting</em>, 156-186.<br><br>
+
+                            The link to the handbook chapter is <a href="https://doi.org/10.4337/9781035310050.00011" target="_blank">here</a>.
                         </div>
                     </div>
 

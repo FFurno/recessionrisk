@@ -1549,19 +1549,15 @@ class RecessionRiskVisualizer {
 
         const headerStatsEl = document.getElementById('header-latest-stats');
         if (headerStatsEl) {
+            // Updated to separate the date/latest part from country values
             let statsText = `<strong>${latestTimePoint} (Latest):</strong> `;
             
             const countryStats = [];
             this.selectedCountries.forEach(country => {
                 const data = latestDataPoint[country];
                 if (data) {
-                    const countryCode = country === 'US' ? 'US' : 
-                                    country === 'EA' ? 'EA' : 
-                                    country === 'DE' ? 'DE' : 
-                                    country === 'FRA' ? 'FR' : 
-                                    country === 'SPA' ? 'ES' : 
-                                    country === 'ITA' ? 'IT' : country;
-                    countryStats.push(`<strong>${countryCode} ${(data.RecessionRisk_p50 * 100).toFixed(1)}%</strong>`);
+                    const countryName = this.countryLabels[country] || country;
+                    countryStats.push(`<strong>${countryName} ${(data.RecessionRisk_p50 * 100).toFixed(1)}%</strong>`);
                 }
             });
             
@@ -1573,7 +1569,7 @@ class RecessionRiskVisualizer {
             
             headerStatsEl.innerHTML = statsText;
         }
-    }    
+    }   
 
     hideLoading() {
         document.getElementById('loading').style.display = 'none';

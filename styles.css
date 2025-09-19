@@ -65,6 +65,16 @@ body {
     margin-bottom: 15px;
 }
 
+/* Style for the date and "Latest" part */
+.header-stats-line strong:first-of-type {
+    color: #343a40; 
+}
+
+/* Keep country values in blue */
+.header-stats-line strong:not(:first-of-type) {
+    color: #0072bd;
+}
+
 .header-downloads {
     display: flex;
     gap: 8px;
@@ -643,7 +653,7 @@ body {
 .faq-simple-container {
     max-width: 800px;
     margin: 0 auto;
-    padding: 40px;
+    padding: 16px;
 }
 
 .faq-main-title {
@@ -730,5 +740,44 @@ body {
     .download-row-split {
         flex-direction: column;
         gap: 6px;
+    }
+}
+
+
+
+/* FAQ Figure Styling */
+.faq-figure {
+    margin: 20px 0;
+    text-align: center;
+}
+
+.faq-image {
+    max-width: 100%;
+    height: auto;
+    border: none;
+    border-radius: 8px;
+    box-shadow: none;
+    margin-bottom: 10px;
+}
+
+.faq-caption {
+    font-size: 0.9rem;
+    color: #6c757d;
+    font-style: italic;
+    line-height: 1.4;
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: left;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .faq-image {
+        border-radius: 4px;
+    }
+    
+    .faq-caption {
+        font-size: 0.85rem;
+        padding: 0 10px;
     }
 }
