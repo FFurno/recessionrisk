@@ -1629,4 +1629,46 @@ document.addEventListener('DOMContentLoaded', () => {
     new RecessionRiskVisualizer();
 });
         
-        
+
+
+// Image modal functionality for FAQ images
+document.addEventListener('DOMContentLoaded', function() {
+    // Create modal elements
+    const modal = document.createElement('div');
+    modal.className = 'image-modal';
+    modal.innerHTML = `
+        <span class="image-modal-close">&times;</span>
+        <img class="image-modal-content" alt="">
+    `;
+    document.body.appendChild(modal);
+
+    const modalImg = modal.querySelector('.image-modal-content');
+    const closeBtn = modal.querySelector('.image-modal-close');
+
+    // Add click listeners to all FAQ images
+    document.querySelectorAll('.faq-image').forEach(img => {
+        img.addEventListener('click', function() {
+            modal.style.display = 'block';
+            modalImg.src = this.src;
+            modalImg.alt = this.alt;
+        });
+    });
+
+    // Close modal when clicking the X or outside the image
+    closeBtn.addEventListener('click', () => {
+        modal.style.display = 'none';
+    });
+
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.style.display = 'none';
+        }
+    });
+
+    // Close modal with Escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.style.display === 'block') {
+            modal.style.display = 'none';
+        }
+    });
+});
