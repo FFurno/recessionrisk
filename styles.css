@@ -780,17 +780,28 @@ body {
         margin-bottom: 15px;
     }
     
+    .countries-control-box .estimation-method::before {
+        display: none;
+    }
+
     .dropdown-selected {
         padding: 10px 12px;
         min-height: 40px;
         font-size: 0.9rem;
     }
 
+    .estimation-method {
+        gap: 10px;
+        flex-direction: row; /* Keep horizontal */
+        justify-content: center;
+    }
+    
     .estimation-method label {
         font-size: 0.8rem;
         padding: 4px 6px;
+        min-width: 55px;
+        text-align: center;
     }
-
     .content {
         padding: 15px 20px 25px 20px;
     }
@@ -914,6 +925,10 @@ body {
         align-items: stretch;
     }
     
+    .countries-control-box .estimation-method::before {
+        display: none;
+    }
+
     .countries-control-box .country-dropdown {
         max-width: none;
         min-width: auto;
@@ -956,16 +971,19 @@ body {
         font-size: 0.8rem;
     }
     
-    .estimation-method {
-        gap: 5px;
-        flex-direction: column;
+   .estimation-method {
+        gap: 8px;
+        flex-direction: row; /* Keep horizontal */
+        justify-content: center;
     }
     
     .estimation-method label {
         font-size: 0.75rem;
         padding: 3px 5px;
+        min-width: 50px;
+        text-align: center;
     }
-
+    
     .download-row-split {
         flex-direction: column;
         gap: 6px;
