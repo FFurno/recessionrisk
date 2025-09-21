@@ -1,3 +1,6 @@
+/* ==========================================================================
+   Global Styles
+   ========================================================================== */
 * {
     margin: 0;
     padding: 0;
@@ -12,6 +15,9 @@ body {
     color: #212529;
 }
 
+/* ==========================================================================
+   Container Component
+   ========================================================================== */
 .container {
     max-width: 1400px;
     margin: 0 auto;
@@ -22,6 +28,9 @@ body {
     overflow: hidden;
 }
 
+/* ==========================================================================
+   Header Component
+   ========================================================================== */
 .header {
     background: linear-gradient(135deg, #343a40 0%, #495057 100%);
     color: white;
@@ -45,6 +54,162 @@ body {
     font-weight: 400;
 }
 
+@media (max-width: 768px) {
+    .header {
+        padding: 25px 20px; /* Reduced from 40px */
+    }
+    
+    .header h1 {
+        font-size: 1.6rem;
+        margin-bottom: 8px; /* Reduced from 10px */
+    }
+    
+    .header p {
+        font-size: 0.95rem; /* Reduced from 1.1rem */
+        line-height: 1.3;
+    }
+
+    .header-info-section {
+        padding: 10px 20px 10px 20px;
+    }
+    
+   .header-stats-line {
+        font-size: 0.9rem; /* Slightly smaller */
+        margin-bottom: 8px; /* Reduced from 15px */
+    }
+    
+    .header-update-line {
+        font-size: 0.85rem; /* Smaller */
+        margin-bottom: 6px; /* Reduced from 8px */
+    }
+    
+    /* Make download buttons smaller and more compact */
+    .header-downloads {
+        gap: 6px; /* Reduced from 8px */
+    }
+    
+    .download-button-header {
+        padding: 6px 12px; /* Reduced from 8px 16px */
+        font-size: 0.8rem; /* Reduced from 0.9rem */
+    }
+    
+    /* Make country control more compact */
+    .countries-control-box {
+        padding: 8px; /* Reduced from 5px */
+        gap: 20px; /* Reduced from 35px */
+        margin-bottom: 15px; /* Add some margin */
+    }
+    
+    .dropdown-selected {
+        padding: 10px 12px; /* Reduced from 12px 16px */
+        min-height: 40px; /* Reduced from 48px */
+        font-size: 0.9rem; /* Slightly smaller */
+    }
+    
+    /* Make estimation method more compact */
+    .estimation-method label {
+        font-size: 0.8rem; /* Reduced from 0.9rem */
+        padding: 4px 6px; /* Reduced from 6px 8px */
+    }
+
+    .content {
+        padding: 15px 20px 25px 20px; /* Reduced from 25px */
+    }
+    
+    /* Reduce chart container margins and height */
+    .chart-container {
+        height: 350px; /* Reduced from 450px */
+        margin: 20px 0 15px 0; /* Reduced from 30px 0 */
+        padding: 12px; /* Reduced from 15px */
+    }
+    
+    /* Make time range container more compact */
+    .time-range-container {
+        padding: 15px; /* Reduced from 25px */
+        margin: 15px 0; /* Reduced from 20px 0 */
+    }
+    
+    .range-display {
+        margin-top: 25px; /* Reduced from 35px */
+        font-size: 0.85rem; /* Slightly smaller */
+    }
+
+}
+
+
+
+@media (max-width: 480px) {
+    .header {
+        padding: 20px 15px; /* Even more compact */
+    }
+    
+    .header h1 {
+        font-size: 1.4rem;
+        line-height: 1.2;
+        margin-bottom: 6px;
+    }
+    
+    .header p {
+        font-size: 0.85rem;
+        line-height: 1.25;
+    }
+
+    .header-info-section {
+        padding: 8px 15px;
+    }
+    
+    .countries-control-box {
+        padding: 6px;
+        gap: 15px;
+    }
+    
+    .dropdown-selected {
+        padding: 8px 10px;
+        min-height: 36px;
+        font-size: 0.85rem;
+    }
+    
+    .download-button-header {
+        padding: 5px 10px;
+        font-size: 0.75rem;
+    }
+
+        .content {
+        padding: 12px 15px 20px 15px;
+    }
+    
+    .chart-container {
+        height: 300px;
+        margin: 15px 0 10px 0;
+        padding: 10px;
+    }
+    
+    .time-range-container {
+        padding: 12px;
+        margin: 12px 0;
+    }
+    
+    .range-display {
+        margin-top: 20px;
+        font-size: 0.8rem;
+    }
+    
+    /* Make estimation method even more compact */
+    .estimation-method {
+        gap: 5px;
+    }
+    
+    .estimation-method label {
+        font-size: 0.75rem;
+        padding: 3px 5px;
+    }
+    
+}
+
+
+/* ==========================================================================
+   Header Info Section Component
+   ========================================================================== */
 .header-info-section {
     margin: 0;
     padding: 15px 40px 15px 5px;
@@ -59,18 +224,16 @@ body {
 }
 
 .header-stats-line {
-    font-size: 1rem; /* Reduce from 1.1rem */
-    color: #6c757d; /* Change from #343a40 to lighter gray */
-    font-weight: normal; /* Remove bold weight */
+    font-size: 1rem;
+    color: #6c757d;
+    font-weight: normal;
     margin-bottom: 15px;
 }
 
-/* Style for the date and "Latest" part */
 .header-stats-line strong:first-of-type {
     color: #343a40; 
 }
 
-/* Keep country values in blue */
 .header-stats-line strong:not(:first-of-type) {
     color: #0072bd;
 }
@@ -81,6 +244,14 @@ body {
     justify-content: flex-start;
 }
 
+#last-updated-text {
+    color: #0072bd;
+    font-weight: 600;
+}
+
+/* ==========================================================================
+   Download Button Header Component
+   ========================================================================== */
 .download-button-header {
     background: linear-gradient(135deg, #0072bd 0%, #005a96 100%);
     color: white;
@@ -102,6 +273,75 @@ body {
     box-shadow: 0 4px 12px rgba(0, 114, 189, 0.3);
 }
 
+/* ==========================================================================
+   Tab Navigation Component
+   ========================================================================== */
+.tab-navigation {
+    background: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: left;
+    gap: 0;
+}
+
+.tab-button {
+    background: transparent;
+    border: none;
+    padding: 15px 30px;
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: #6c757d;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.tab-button:hover {
+    background: rgba(0, 114, 189, 0.05);
+    color: #0072bd;
+}
+
+.tab-button.active {
+    color: #0072bd;
+    border-bottom-color: #0072bd;
+    background: rgba(0, 114, 189, 0.08);
+}
+
+@media (max-width: 768px) {
+    .tab-button {
+        padding: 12px 20px;
+        font-size: 0.9rem;
+    }
+}
+
+/* ==========================================================================
+   Tab Content Component
+   ========================================================================== */
+.content {
+    padding: 20px 40px 40px 40px;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+@media (max-width: 768px) {
+    .content {
+        padding: 25px;
+    }
+}
+
+/* ==========================================================================
+   Countries Control Component
+   ========================================================================== */
 .countries-control {
     margin-bottom: 0px;
 }
@@ -110,17 +350,17 @@ body {
     background: white; 
     border: 1px solid white;
     border-radius: 10px;
-    padding: 5px; /* Increased padding */
+    padding: 5px;
     display: flex;
     align-items: center;
-    justify-content: flex-start; /* Changed from space-between */
-    gap: 35px; /* Reduced gap */
+    justify-content: flex-start;
+    gap: 35px;
 }
 
 .countries-control-box .country-dropdown {
     flex: 1;
-    max-width: 500px; /* Increased from 300px */
-    min-width: 400px; /* Added minimum width */
+    max-width: 500px;
+    min-width: 400px;
 }
 
 .countries-control-box .estimation-method::before {
@@ -131,37 +371,25 @@ body {
     margin-right: 15px;
 }
 
-
-
 .countries-control-box .estimation-method {
     flex: 0 0 auto;
 }
 
-.content {
-    padding: 20px 40px 40px 40px;
+@media (max-width: 480px) {
+    .countries-control-box {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .countries-control-box .country-dropdown {
+        max-width: none;
+        min-width: auto;
+    }
 }
 
-.control-box-title {
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: #6c757d;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 12px;
-}
-
-.control-box-content {
-    font-size: 1rem;
-    color: #212529;
-}
-
-/* Enhanced countries box z-index */
-.control-box:first-child {
-    z-index: 1000;
-    position: relative;
-}
-
-/* Country dropdown styling */
+/* ==========================================================================
+   Country Dropdown Component
+   ========================================================================== */
 .country-dropdown {
     position: relative;
     width: 100%;
@@ -173,16 +401,16 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 12px 16px; /* Increased padding */
+    padding: 12px 16px;
     border: 2px solid #dee2e6;
     border-radius: 6px;
     background: white;
     cursor: pointer;
-    font-size: 1rem; /* Increased font size */
+    font-size: 1rem;
     transition: all 0.3s ease;
     position: relative;
     z-index: 1001;
-    min-height: 48px; /* Added minimum height */
+    min-height: 48px;
 }
 
 .dropdown-selected:hover {
@@ -227,8 +455,8 @@ body {
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 10px 16px; /* Increased padding */
-    font-size: 0.95rem; /* Slightly increased font size */
+    padding: 10px 16px;
+    font-size: 0.95rem;
     cursor: pointer;
     transition: background-color 0.2s ease;
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
@@ -248,7 +476,88 @@ body {
     accent-color: #0072bd;
 }
 
-/* Chart Error Message Styling */
+/* Enhanced countries box z-index */
+.control-box:first-child {
+    z-index: 1000;
+    position: relative;
+}
+
+/* ==========================================================================
+   Estimation Method Component
+   ========================================================================== */
+.estimation-method {
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+    text-align: left;
+    align-items: center;
+}
+
+.estimation-method label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    padding: 6px 8px;
+    white-space: nowrap;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+}
+
+.estimation-method label:hover {
+    color: #0072bd;
+    background-color: rgba(0, 114, 189, 0.05);
+}
+
+.estimation-method input[type="radio"] {
+    width: 16px;
+    height: 16px;
+    accent-color: #0072bd;
+}
+
+.estimation-method input[type="radio"]:disabled + span {
+    color: #6c757d;
+    opacity: 0.6;
+}
+
+.estimation-method label:has(input:disabled) {
+    cursor: not-allowed;
+    color: #6c757d;
+    opacity: 0.6;
+}
+
+@media (max-width: 480px) {
+    .estimation-method {
+        flex-direction: column;
+        gap: 8px;
+    }
+}
+
+/* ==========================================================================
+   Chart Container Component
+   ========================================================================== */
+.chart-container {
+    position: relative;
+    width: 100%;
+    height: 425px;
+    margin: 30px 0;
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 768px) {
+    .chart-container {
+        height: 450px;
+        padding: 15px;
+    }
+}
+
+/* ==========================================================================
+   Chart Error Message Component
+   ========================================================================== */
 .chart-error-message {
     display: flex;
     flex-direction: column;
@@ -280,185 +589,9 @@ body {
     line-height: 1.4;
 }
 
-/* New estimation method selector */
-.estimation-method {
-    display: flex;
-    flex-direction: row;
-    gap: 15px;
-    text-align: left;
-    align-items: center; /* Added for better alignment */
-}
-
-/* Responsive adjustment for small screens */
-@media (max-width: 480px) {
-    .estimation-method {
-        flex-direction: column;
-        gap: 8px;
-    }
-    
-    .countries-control-box {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    
-    .countries-control-box .country-dropdown {
-        max-width: none;
-        min-width: auto;
-    }
-}
-
-.estimation-method label {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 0.9rem; /* Slightly increased font size */
-    cursor: pointer;
-    padding: 6px 8px; /* Added padding for better touch targets */
-    white-space: nowrap;
-    border-radius: 4px; /* Added border radius for better appearance */
-    transition: background-color 0.2s ease;
-}
-
-.estimation-method label:hover {
-    color: #0072bd;
-    background-color: rgba(0, 114, 189, 0.05);
-}
-
-.estimation-method input[type="radio"] {
-    width: 16px; /* Slightly increased size */
-    height: 16px;
-    accent-color: #0072bd;
-}
-
-.estimation-method input[type="radio"]:disabled + span {
-    color: #6c757d;
-    opacity: 0.6;
-}
-
-.estimation-method label:has(input:disabled) {
-    cursor: not-allowed;
-    color: #6c757d;
-    opacity: 0.6;
-}
-
-/* Stats box specific styling */
-.stat-value {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #0072bd;
-    margin-bottom: 4px;
-}
-
-.stat-range {
-    font-size: 0.85rem;
-    color: #6c757d;
-}
-
-.stat-period {
-    font-size: 1.1rem;
-    color: #495057;
-    margin-bottom: 8px;
-}
-
-.multi-country-stats {
-    max-height: 120px;
-    overflow-y: auto;
-    text-align: left;
-}
-
-.country-stat-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 4px 0;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-.country-stat-row:last-child {
-    border-bottom: none;
-}
-
-.country-name {
-    font-weight: 600;
-    font-size: 0.85rem;
-}
-
-.country-value {
-    font-weight: 700;
-    color: #0072bd;
-    font-size: 0.9rem;
-}
-
-/* Download button styling */
-.download-button {
-    background: linear-gradient(135deg, #0072bd 0%, #005a96 100%);
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 6px;
-    font-size: 0.95rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.download-button:hover {
-    background: linear-gradient(135deg, #005a96 0%, #004678 100%);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 114, 189, 0.3);
-}
-
-.download-button svg {
-    width: 16px;
-    height: 16px;
-}
-
-/* Downloads container styling */
-.downloads-container {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    align-items: center;
-}
-
-.download-row-full {
-    display: flex;
-    justify-content: center;
-    width: 100%;
-}
-
-.download-row-split {
-    display: flex;
-    gap: 8px;
-    justify-content: center;
-    width: 100%;
-}
-
-.download-button-compact {
-    font-size: 0.8rem;
-    padding: 6px 12px;
-    display: inline-flex;
-}
-
-#last-updated-text {
-    color: #0072bd;
-    font-weight: 600;
-}
-
-.chart-container {
-    position: relative;
-    width: 100%;
-    height: 425px;
-    margin: 30px 0;
-    background: white;
-    border-radius: 15px;
-    padding: 20px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-}
-
+/* ==========================================================================
+   Loading Component
+   ========================================================================== */
 .loading {
     text-align: center;
     padding: 80px 20px;
@@ -480,6 +613,9 @@ body {
     100% { transform: rotate(360deg); }
 }
 
+/* ==========================================================================
+   Error Component
+   ========================================================================== */
 .error {
     background: linear-gradient(135deg, #fee 0%, #fdd 100%);
     border: 2px solid #fcc;
@@ -490,6 +626,9 @@ body {
     font-weight: 500;
 }
 
+/* ==========================================================================
+   Time Range Container Component
+   ========================================================================== */
 .time-range-container {
     background: linear-gradient(135deg, #f1f3f4 0%, #e8eaed 100%);
     padding: 25px;
@@ -588,68 +727,154 @@ body {
     font-weight: 700;
 }
 
-/* Tab Navigation Styling */
-.tab-navigation {
-    background: #f8f9fa;
-    border-bottom: 1px solid #dee2e6;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    justify-content: left;
-    gap: 0;
-}
-
-.tab-button {
-    background: transparent;
-    border: none;
-    padding: 15px 30px;
-    font-size: 1.15rem;
+/* ==========================================================================
+   Stats Components
+   ========================================================================== */
+.control-box-title {
+    font-size: 0.85rem;
     font-weight: 600;
     color: #6c757d;
-    cursor: pointer;
-    border-bottom: 3px solid transparent;
-    transition: all 0.3s ease;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    margin-bottom: 12px;
 }
 
-.tab-button:hover {
-    background: rgba(0, 114, 189, 0.05);
+.control-box-content {
+    font-size: 1rem;
+    color: #212529;
+}
+
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
     color: #0072bd;
+    margin-bottom: 4px;
 }
 
-.tab-button.active {
+.stat-range {
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+.stat-period {
+    font-size: 1.1rem;
+    color: #495057;
+    margin-bottom: 8px;
+}
+
+.multi-country-stats {
+    max-height: 120px;
+    overflow-y: auto;
+    text-align: left;
+}
+
+.country-stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.country-stat-row:last-child {
+    border-bottom: none;
+}
+
+.country-name {
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.country-value {
+    font-weight: 700;
     color: #0072bd;
-    border-bottom-color: #0072bd;
-    background: rgba(0, 114, 189, 0.08);
+    font-size: 0.9rem;
 }
 
-.tab-content {
-    display: none;
+/* ==========================================================================
+   Download Button Component
+   ========================================================================== */
+.download-button {
+    background: linear-gradient(135deg, #0072bd 0%, #005a96 100%);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
 }
 
-.tab-content.active {
-    display: block;
+.download-button:hover {
+    background: linear-gradient(135deg, #005a96 0%, #004678 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 114, 189, 0.3);
 }
 
-/* FAQ Styling */
-.faq-main-title {
-    font-variant: small-caps;
+.download-button svg {
+    width: 16px;
+    height: 16px;
 }
 
-.faq-simple-answer {
-    text-align: justify;
+.downloads-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
 }
 
-.faq-simple-answer a {
-    color: #0072bd;
-    text-decoration: none;
+.download-row-full {
+    display: flex;
+    justify-content: center;
+    width: 100%;
 }
 
-.faq-simple-answer a:hover {
-    text-decoration: underline;
+.download-row-split {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    width: 100%;
 }
 
+.download-button-compact {
+    font-size: 0.8rem;
+    padding: 6px 12px;
+    display: inline-flex;
+}
+
+@media (max-width: 768px) {
+    .last-update-line {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    
+    .top-downloads {
+        align-self: stretch;
+        justify-content: center;
+    }
+    
+    .download-button-small {
+        flex: 1;
+        justify-content: center;
+        max-width: 100px;
+    }
+}
+
+@media (max-width: 480px) {
+    .download-row-split {
+        flex-direction: column;
+        gap: 6px;
+    }
+}
+
+/* ==========================================================================
+   FAQ Component
+   ========================================================================== */
 .faq-simple-container {
     max-width: 800px;
     margin: 0 auto;
@@ -657,6 +882,7 @@ body {
 }
 
 .faq-main-title {
+    font-variant: small-caps;
     color: #343a40;
     font-size: 2rem;
     font-weight: 600;
@@ -683,69 +909,18 @@ body {
     line-height: 1.6;
     font-size: 1rem;
     margin-left: 0;
+    text-align: justify;
 }
 
-/* Responsive design */
-@media (max-width: 768px) {
-    .control-panel {
-        flex-direction: column;
-        align-items: center;
-    }
-    
-    .header h1 {
-        font-size: 2rem;
-    }
-    
-    .content {
-        padding: 25px;
-    }
-    
-    .chart-container {
-        height: 450px;
-        padding: 15px;
-    }
-    
-    .last-update-line {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 12px;
-    }
-    
-    .top-downloads {
-        align-self: stretch;
-        justify-content: center;
-    }
-    
-    .download-button-small {
-        flex: 1;
-        justify-content: center;
-        max-width: 100px;
-    }
-    
-    .tab-button {
-        padding: 12px 20px;
-        font-size: 0.9rem;
-    }
-    
-    .faq-simple-container {
-        padding: 25px;
-    }
-    
-    .faq-main-title {
-        font-size: 1.5rem;
-    }
+.faq-simple-answer a {
+    color: #0072bd;
+    text-decoration: none;
 }
 
-@media (max-width: 480px) {
-    .download-row-split {
-        flex-direction: column;
-        gap: 6px;
-    }
+.faq-simple-answer a:hover {
+    text-decoration: underline;
 }
 
-
-
-/* FAQ Figure Styling */
 .faq-figure {
     margin: 20px 0;
     text-align: center;
@@ -767,17 +942,73 @@ body {
     line-height: 1.4;
     max-width: 800px;
     margin: 0 auto;
-    text-align: left;
+    text-align: justify;
 }
 
-/* Responsive adjustments */
 @media (max-width: 768px) {
+    .faq-main-title {
+        font-size: 1.4rem;
+        margin-bottom: 25px;
+        text-align: left;
+        border-bottom: 1px solid #0072bd;
+        padding-bottom: 10px;
+    }
+    
+    .faq-simple-container {
+        padding: 20px 15px;
+    }
+    
+    .faq-simple-item {
+        margin-bottom: 25px;
+    }
+    
+    .faq-simple-question {
+        font-size: 0.95rem;
+        line-height: 1.3;
+        margin-bottom: 6px;
+        text-align: left;
+    }
+    
+    .faq-simple-answer {
+        font-size: 0.85rem;
+        line-height: 1.5;
+        text-align: left;
+    }
+    
+    .faq-figure {
+        margin: 15px 0;
+    }
+    
     .faq-image {
         border-radius: 4px;
     }
     
     .faq-caption {
-        font-size: 0.85rem;
-        padding: 0 10px;
+        font-size: 0.75rem;
+        padding: 0 5px;
+        text-align: left;
+    }
+}
+
+@media (max-width: 480px) {
+    .faq-main-title {
+        font-size: 1.2rem;
+        margin-bottom: 20px;
+    }
+    
+    .faq-simple-container {
+        padding: 15px 12px;
+    }
+    
+    .faq-simple-question {
+        font-size: 0.9rem;
+    }
+    
+    .faq-simple-answer {
+        font-size: 0.8rem;
+    }
+    
+    .faq-caption {
+        font-size: 0.7rem;
     }
 }
