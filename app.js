@@ -739,6 +739,19 @@ class RecessionRiskVisualizer {
             endSlider.max = allTimePoints.length - 1;
             endSlider.value = allTimePoints.length - 1;
             
+            // Check if we're on mobile (screen width <= 768px)
+            const isMobile = window.innerWidth <= 768;
+            
+            if (isMobile) {
+                // Set to show last 5 years on mobile
+                const YearsAgo = 7 * 12; // 5 years * 12 months
+                const mobileStartIndex = Math.max(0, allTimePoints.length - YearsAgo);
+                startSlider.value = mobileStartIndex;
+            } else {
+                // Desktop: start from beginning
+                startSlider.value = 0;
+            }
+            
             this.updateRangeLabels();
             this.updateVisualRange();
         }
