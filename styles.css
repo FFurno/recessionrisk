@@ -54,159 +54,6 @@ body {
     font-weight: 400;
 }
 
-@media (max-width: 768px) {
-    .header {
-        padding: 25px 20px; /* Reduced from 40px */
-    }
-    
-    .header h1 {
-        font-size: 1.6rem;
-        margin-bottom: 8px; /* Reduced from 10px */
-    }
-    
-    .header p {
-        font-size: 0.95rem; /* Reduced from 1.1rem */
-        line-height: 1.3;
-    }
-
-    .header-info-section {
-        padding: 10px 20px 10px 20px;
-    }
-    
-   .header-stats-line {
-        font-size: 0.9rem; /* Slightly smaller */
-        margin-bottom: 8px; /* Reduced from 15px */
-    }
-    
-    .header-update-line {
-        font-size: 0.85rem; /* Smaller */
-        margin-bottom: 6px; /* Reduced from 8px */
-    }
-    
-    /* Make download buttons smaller and more compact */
-    .header-downloads {
-        gap: 6px; /* Reduced from 8px */
-    }
-    
-    .download-button-header {
-        padding: 6px 12px; /* Reduced from 8px 16px */
-        font-size: 0.8rem; /* Reduced from 0.9rem */
-    }
-    
-    /* Make country control more compact */
-    .countries-control-box {
-        padding: 8px; /* Reduced from 5px */
-        gap: 20px; /* Reduced from 35px */
-        margin-bottom: 15px; /* Add some margin */
-    }
-    
-    .dropdown-selected {
-        padding: 10px 12px; /* Reduced from 12px 16px */
-        min-height: 40px; /* Reduced from 48px */
-        font-size: 0.9rem; /* Slightly smaller */
-    }
-    
-    /* Make estimation method more compact */
-    .estimation-method label {
-        font-size: 0.8rem; /* Reduced from 0.9rem */
-        padding: 4px 6px; /* Reduced from 6px 8px */
-    }
-
-    .content {
-        padding: 15px 20px 25px 20px; /* Reduced from 25px */
-    }
-    
-    /* Reduce chart container margins and height */
-    .chart-container {
-        height: 350px; /* Reduced from 450px */
-        margin: 20px 0 15px 0; /* Reduced from 30px 0 */
-        padding: 12px; /* Reduced from 15px */
-    }
-    
-    /* Make time range container more compact */
-    .time-range-container {
-        padding: 15px; /* Reduced from 25px */
-        margin: 15px 0; /* Reduced from 20px 0 */
-    }
-    
-    .range-display {
-        margin-top: 25px; /* Reduced from 35px */
-        font-size: 0.85rem; /* Slightly smaller */
-    }
-
-}
-
-
-
-@media (max-width: 480px) {
-    .header {
-        padding: 20px 15px; /* Even more compact */
-    }
-    
-    .header h1 {
-        font-size: 1.4rem;
-        line-height: 1.2;
-        margin-bottom: 6px;
-    }
-    
-    .header p {
-        font-size: 0.85rem;
-        line-height: 1.25;
-    }
-
-    .header-info-section {
-        padding: 8px 15px;
-    }
-    
-    .countries-control-box {
-        padding: 6px;
-        gap: 15px;
-    }
-    
-    .dropdown-selected {
-        padding: 8px 10px;
-        min-height: 36px;
-        font-size: 0.85rem;
-    }
-    
-    .download-button-header {
-        padding: 5px 10px;
-        font-size: 0.75rem;
-    }
-
-        .content {
-        padding: 12px 15px 20px 15px;
-    }
-    
-    .chart-container {
-        height: 300px;
-        margin: 15px 0 10px 0;
-        padding: 10px;
-    }
-    
-    .time-range-container {
-        padding: 12px;
-        margin: 12px 0;
-    }
-    
-    .range-display {
-        margin-top: 20px;
-        font-size: 0.8rem;
-    }
-    
-    /* Make estimation method even more compact */
-    .estimation-method {
-        gap: 5px;
-    }
-    
-    .estimation-method label {
-        font-size: 0.75rem;
-        padding: 3px 5px;
-    }
-    
-}
-
-
 /* ==========================================================================
    Header Info Section Component
    ========================================================================== */
@@ -311,13 +158,6 @@ body {
     background: rgba(0, 114, 189, 0.08);
 }
 
-@media (max-width: 768px) {
-    .tab-button {
-        padding: 12px 20px;
-        font-size: 0.9rem;
-    }
-}
-
 /* ==========================================================================
    Tab Content Component
    ========================================================================== */
@@ -331,12 +171,6 @@ body {
 
 .tab-content.active {
     display: block;
-}
-
-@media (max-width: 768px) {
-    .content {
-        padding: 25px;
-    }
 }
 
 /* ==========================================================================
@@ -373,18 +207,6 @@ body {
 
 .countries-control-box .estimation-method {
     flex: 0 0 auto;
-}
-
-@media (max-width: 480px) {
-    .countries-control-box {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    
-    .countries-control-box .country-dropdown {
-        max-width: none;
-        min-width: auto;
-    }
 }
 
 /* ==========================================================================
@@ -527,13 +349,6 @@ body {
     opacity: 0.6;
 }
 
-@media (max-width: 480px) {
-    .estimation-method {
-        flex-direction: column;
-        gap: 8px;
-    }
-}
-
 /* ==========================================================================
    Chart Container Component
    ========================================================================== */
@@ -546,13 +361,6 @@ body {
     border-radius: 15px;
     padding: 20px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-}
-
-@media (max-width: 768px) {
-    .chart-container {
-        height: 450px;
-        padding: 15px;
-    }
 }
 
 /* ==========================================================================
@@ -846,32 +654,6 @@ body {
     display: inline-flex;
 }
 
-@media (max-width: 768px) {
-    .last-update-line {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 12px;
-    }
-    
-    .top-downloads {
-        align-self: stretch;
-        justify-content: center;
-    }
-    
-    .download-button-small {
-        flex: 1;
-        justify-content: center;
-        max-width: 100px;
-    }
-}
-
-@media (max-width: 480px) {
-    .download-row-split {
-        flex-direction: column;
-        gap: 6px;
-    }
-}
-
 /* ==========================================================================
    FAQ Component
    ========================================================================== */
@@ -945,7 +727,112 @@ body {
     text-align: justify;
 }
 
+/* ==========================================================================
+   MOBILE STYLES - MUST BE AT THE END
+   ========================================================================== */
 @media (max-width: 768px) {
+    .header {
+        padding: 25px 20px;
+    }
+    
+    .header h1 {
+        font-size: 1.6rem;
+        margin-bottom: 8px;
+    }
+    
+    .header p {
+        font-size: 0.95rem;
+        line-height: 1.3;
+    }
+
+    .header-info-section {
+        padding: 8px 15px 8px 15px;
+    }
+    
+    .header-stats-line {
+        font-size: 0.8rem;
+        margin-bottom: 6px;
+    }
+    
+    .header-update-line {
+        font-size: 0.75rem;
+        margin-bottom: 4px;
+    }
+    
+    .header-downloads {
+        gap: 6px;
+    }
+    
+    .download-button-header {
+        padding: 4px 8px;
+        font-size: 0.7rem;
+        gap: 4px;
+    }
+
+    .download-button-header svg {
+        width: 12px;
+        height: 12px;
+    }
+    
+    .countries-control-box {
+        padding: 8px;
+        gap: 20px;
+        margin-bottom: 15px;
+    }
+    
+    .dropdown-selected {
+        padding: 10px 12px;
+        min-height: 40px;
+        font-size: 0.9rem;
+    }
+
+    .estimation-method label {
+        font-size: 0.8rem;
+        padding: 4px 6px;
+    }
+
+    .content {
+        padding: 15px 20px 25px 20px;
+    }
+    
+    .chart-container {
+        height: 350px;
+        margin: 20px 0 15px 0;
+        padding: 12px;
+    }
+    
+    .time-range-container {
+        padding: 15px;
+        margin: 15px 0;
+    }
+    
+    .range-display {
+        margin-top: 25px;
+        font-size: 0.85rem;
+    }
+
+    .tab-button {
+        padding: 12px 20px;
+        font-size: 0.9rem;
+    }
+
+    .last-update-line {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    
+    .top-downloads {
+        align-self: stretch;
+        justify-content: center;
+    }
+    
+    .download-button-small {
+        flex: 1;
+        justify-content: center;
+        max-width: 100px;
+    }
+
     .faq-main-title {
         font-size: 1.4rem;
         margin-bottom: 25px;
@@ -991,6 +878,99 @@ body {
 }
 
 @media (max-width: 480px) {
+    .header {
+        padding: 20px 15px;
+    }
+    
+    .header h1 {
+        font-size: 1.4rem;
+        line-height: 1.2;
+        margin-bottom: 6px;
+    }
+    
+    .header p {
+        font-size: 0.85rem;
+        line-height: 1.25;
+    }
+
+    .header-info-section {
+        padding: 6px 12px;
+    }
+
+    .header-stats-line {
+        font-size: 0.75rem;
+        margin-bottom: 4px;
+    }
+    
+    .header-update-line {
+        font-size: 0.7rem;
+        margin-bottom: 3px;
+    }
+    
+    .countries-control-box {
+        padding: 6px;
+        gap: 15px;
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .countries-control-box .country-dropdown {
+        max-width: none;
+        min-width: auto;
+    }
+    
+    .dropdown-selected {
+        padding: 8px 10px;
+        min-height: 36px;
+        font-size: 0.85rem;
+    }
+    
+    .download-button-header {
+        padding: 3px 6px;
+        font-size: 0.65rem;
+        gap: 3px;
+    }
+
+    .download-button-header svg {
+        width: 10px;
+        height: 10px;
+    }
+
+    .content {
+        padding: 12px 15px 20px 15px;
+    }
+    
+    .chart-container {
+        height: 300px;
+        margin: 15px 0 10px 0;
+        padding: 10px;
+    }
+    
+    .time-range-container {
+        padding: 12px;
+        margin: 12px 0;
+    }
+    
+    .range-display {
+        margin-top: 20px;
+        font-size: 0.8rem;
+    }
+    
+    .estimation-method {
+        gap: 5px;
+        flex-direction: column;
+    }
+    
+    .estimation-method label {
+        font-size: 0.75rem;
+        padding: 3px 5px;
+    }
+
+    .download-row-split {
+        flex-direction: column;
+        gap: 6px;
+    }
+
     .faq-main-title {
         font-size: 1.2rem;
         margin-bottom: 20px;
