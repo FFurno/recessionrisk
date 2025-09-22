@@ -34,21 +34,21 @@ body {
 .header {
     background: linear-gradient(135deg, #343a40 0%, #495057 100%);
     color: white;
-    padding: 30px 40px;
+    padding: 20px 40px;
     text-align: center;
     border-bottom: 3px solid #6c757d;
 }
 
 .header h1 {
-    font-size: 2.5rem;
+    font-size: 2rem;
     font-weight: 600;
-    margin-bottom: 10px;
+    margin-bottom: 6px;
     color: #ffffff;
     letter-spacing: -0.5px;
 }
 
 .header p {
-    font-size: 1.1rem;
+    font-size: 1rem;
     opacity: 0.9;
     color: #adb5bd;
     font-weight: 400;
@@ -59,22 +59,30 @@ body {
    ========================================================================== */
 .header-info-section {
     margin: 0;
-    padding: 12px 40px 12px 5px;
+    padding: 6px 40px 6px 5px;
     background: white;
     text-align: left;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+}
+
+.header-left-info {
+    flex: 1;
 }
 
 .header-update-line {
-    font-size: 1rem;
+    font-size: 0.85rem;
     color: #6c757d;
-    margin-bottom: 8px;
+    margin-bottom: 4px;
 }
 
 .header-stats-line {
-    font-size: 1rem;
+    font-size: 0.9rem;
     color: #6c757d;
     font-weight: normal;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
 }
 
 .header-stats-line strong:first-of-type {
@@ -88,7 +96,9 @@ body {
 .header-downloads {
     display: flex;
     gap: 8px;
-    justify-content: flex-start;
+    justify-content: flex-end;
+    margin-top: 0;
+    flex-shrink: 0; /* Prevent buttons from shrinking */
 }
 
 #last-updated-text {
@@ -103,15 +113,15 @@ body {
     background: linear-gradient(135deg, #0072bd 0%, #005a96 100%);
     color: white;
     border: none;
-    padding: 8px 16px;
+    padding: 6px 12px;
     border-radius: 6px;
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.3s ease;
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 4px;
 }
 
 .download-button-header:hover {
@@ -136,8 +146,8 @@ body {
 .tab-button {
     background: transparent;
     border: none;
-    padding: 15px 30px;
-    font-size: 1.15rem;
+    padding: 10px 22px;
+    font-size: 0.95rem;
     font-weight: 600;
     color: #6c757d;
     cursor: pointer;
@@ -162,7 +172,7 @@ body {
    Tab Content Component
    ========================================================================== */
 .content {
-    padding: 20px 40px 40px 40px;
+    padding: 15px 40px 35px 40px;
 }
 
 .tab-content {
@@ -184,7 +194,7 @@ body {
     background: white; 
     border: 1px solid white;
     border-radius: 10px;
-    padding: 5px;
+    padding: 8px;
     display: flex;
     align-items: center;
     justify-content: flex-start;
@@ -223,16 +233,16 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 12px 16px;
+    padding: 10px 14px;
     border: 2px solid #dee2e6;
     border-radius: 6px;
     background: white;
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 0.95rem;
     transition: all 0.3s ease;
     position: relative;
     z-index: 1001;
-    min-height: 48px;
+    min-height: 44px;
 }
 
 .dropdown-selected:hover {
@@ -319,9 +329,9 @@ body {
     display: flex;
     align-items: center;
     gap: 6px;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     cursor: pointer;
-    padding: 6px 8px;
+    padding: 5px 7px;
     white-space: nowrap;
     border-radius: 4px;
     transition: background-color 0.2s ease;
@@ -715,6 +725,12 @@ body {
     border-radius: 8px;
     box-shadow: none;
     margin-bottom: 10px;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+}
+
+.faq-image:hover {
+    opacity: 0.9;
 }
 
 .faq-caption {
@@ -727,19 +743,9 @@ body {
     text-align: justify;
 }
 
-
 /* ==========================================================================
    Image Modal Styles
    ========================================================================== */
-.faq-image {
-    cursor: pointer;
-    transition: opacity 0.2s ease;
-}
-
-.faq-image:hover {
-    opacity: 0.9;
-}
-
 .image-modal {
     display: none;
     position: fixed;
@@ -796,6 +802,9 @@ body {
     }
 
     .header-info-section {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
         padding: 8px 15px 8px 15px;
     }
     
@@ -811,6 +820,7 @@ body {
     
     .header-downloads {
         gap: 6px;
+        justify-content: flex-start;
     }
     
     .download-button-header {
@@ -842,7 +852,7 @@ body {
 
     .estimation-method {
         gap: 10px;
-        flex-direction: row; /* Keep horizontal */
+        flex-direction: row;
         justify-content: center;
     }
     
@@ -955,7 +965,14 @@ body {
     }
 
     .header-info-section {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
         padding: 6px 12px;
+    }
+
+    .header-downloads {
+        justify-content: flex-start;
     }
 
     .header-stats-line {
@@ -1023,7 +1040,7 @@ body {
     
    .estimation-method {
         gap: 8px;
-        flex-direction: row; /* Keep horizontal */
+        flex-direction: row;
         justify-content: center;
     }
     
