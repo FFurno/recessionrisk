@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📈</text></svg>">
-    <title>Nowcasting Recession Risk</title>
+    <title>RecessionRisk.com</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <link rel="stylesheet" href="styles.css">
@@ -12,7 +12,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>Nowcasting Recession Risk</h1>
+            <h1>RecessionRisk.com</h1>
             <p>Based on "<a href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4706700" style="color: #adb5bd; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">Nowcasting Recession Risk</a>" by Furno and Giannone (2024)</p>
         </div>
         
@@ -29,6 +29,9 @@
                         <div class="header-stats-line">
                             <span id="header-latest-stats">Latest: --</span>
                         </div>
+                        <div class="header-stats-line">
+                            <span id="header-prev-stats">Previous: --</span>
+                        </div>                        
                         <div class="header-update-line">Last Updated: <span id="last-updated-text">--</span></div>
                     </div>
                     <div class="header-downloads">
@@ -40,14 +43,6 @@
                             </svg>
                             Data
                         </button>                           
-                        <button onclick="window.open('full-report.pdf', '_blank')" class="download-button-header">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                                <polyline points="7,10 12,15 17,10"/>
-                                <line x1="12" y1="15" x2="12" y2="3"/>
-                            </svg>
-                            Report
-                        </button>                            
                         <button onclick="window.open('https://www.amazon.science/publications/nowcasting-recession-risk', '_blank')" class="download-button-header">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
@@ -56,6 +51,15 @@
                             </svg>
                             Working Paper
                         </button>
+                        <button onclick="window.open('https://doi.org/10.4337/9781035310050.00011', '_blank')" class="download-button-header">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                                <polyline points="15,3 21,3 21,9"/>
+                                <line x1="10" y1="14" x2="21" y2="3"/>
+                            </svg>
+                            Handbook Chapter
+                        </button>
+
                     </div>
                 </div>
                 
@@ -79,10 +83,6 @@
                                 <div class="dropdown-menu" id="country-dropdown-menu">
                                     <label><input type="checkbox" value="US" checked> United States</label>
                                     <label><input type="checkbox" value="EA"> Euro Area</label>
-                                    <label><input type="checkbox" value="DE"> Germany</label>
-                                    <label><input type="checkbox" value="FRA"> France</label>
-                                    <label><input type="checkbox" value="SPA"> Spain</label>
-                                    <label><input type="checkbox" value="ITA"> Italy</label>
                                 </div>
                             </div>
                             
@@ -139,7 +139,7 @@
 
                     <div class="faq-simple-item">
                         <div class="faq-simple-question">Q: What are the input data?</div>
-                        <div class="faq-simple-answer">A: The model combines macroeconomic and financial conditions specific to each region or country. For the US, it uses the <a href="https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/" target="_blank">ISM PMI Manufacturing</a> and the <a href="https://doi.org/10.1093/rof/rfaf013" target="_blank">Composite Indicator of Systemic Stress (CISS)</a>. The ISM PMI Manufacturing is a monthly diffusion index based on surveys of purchasing managers at manufacturing companies, measuring key business conditions like new orders, production, and employment. For each European region and country (Euro Area, Germany, France, Spain, and Italy), the model uses their respective <a href="https://economy-finance.ec.europa.eu/economic-forecast-and-surveys/business-and-consumer-surveys/latest-business-and-consumer-surveys_en" target="_blank">Economic Sentiment Indicator (ESI)</a> paired with their respective CISS. The ESI captures real economic activity through surveys across industry (40%), services (30%), consumers (20%), retail (5%), and construction (5%). The CISS measures financial market stress across five key segments: bonds, equities, money markets, foreign exchange, and financial intermediaries, using a methodology that accounts for cross-market correlations.</div>
+                        <div class="faq-simple-answer">A: The model combines macroeconomic and financial conditions specific to each region or country. For the US, it uses the <a href="https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/" target="_blank">ISM PMI Manufacturing</a> and the <a href="https://doi.org/10.1093/rof/rfaf013" target="_blank">Composite Indicator of Systemic Stress (CISS)</a>. The ISM PMI Manufacturing is a monthly diffusion index based on surveys of purchasing managers at manufacturing companies, measuring key business conditions like new orders, production, and employment. For the euro area, the model uses the <a href="https://economy-finance.ec.europa.eu/economic-forecast-and-surveys/business-and-consumer-surveys/latest-business-and-consumer-surveys_en" target="_blank">Economic Sentiment Indicator (ESI)</a> and the CISS. The ESI captures real economic activity through surveys across industry (40%), services (30%), consumers (20%), retail (5%), and construction (5%). The CISS measures financial market stress across five key segments: bonds, equities, money markets, foreign exchange, and financial intermediaries, using a methodology that accounts for cross-market correlations.</div>
                     </div>
 
                     <div class="faq-simple-item">
@@ -148,24 +148,24 @@
                         
                         <div class="faq-figure">
                             <img src="./Figure1_US_EA.png" alt="Macroeconomic and Financial Conditions during Recessions and Expansions" class="faq-image">
-                            <div class="faq-caption">The chart above illustrates this relationship for the United States and Euro Area, showing how recessions (blue dots) are characterized by both weak economic activity and elevated financial stress, while expansions (orange dots) show the opposite pattern. The minimal overlap between the two distributions demonstrates why examining both indicators together improves recession detection.</div>
+                            <div class="faq-caption">The chart above illustrates this relationship for the United States and euro area, showing how recessions (blue dots) are characterized by both weak economic activity and elevated financial stress, while expansions (orange dots) show the opposite pattern. The minimal overlap between the two distributions demonstrates why examining both indicators together improves recession detection.</div>
                         </div>
                         </div>
                     </div>
 
                     <div class="faq-simple-item">
                         <div class="faq-simple-question">Q: How are recessions measured?</div>
-                        <div class="faq-simple-answer">A: Official recession dates are determined by national business cycle dating committees: the <a href="https://www.nber.org/research/business-cycle-dating" target="_blank">NBER (National Bureau of Economic Research)</a> for the US, <a href="https://eabcn.org/dbc/home" target="_blank">CEPR (Centre for Economic Policy Research)</a> for the Euro Area, the <a href="https://www.sachverstaendigenrat-wirtschaft.de/en/topics/business-cycles-and-growth/konjunkturzyklus-datierung.html" target="_blank">German Council of Economic Experts (GCEE)</a> for Germany, the <a href="https://www.afse.fr/fr/cycles-eco/english-version-500228" target="_blank">French Business Cycle Dating Committee (AFSE)</a> for France, and the <a href="https://www.asesec.org/CFCweb/index.php/en/" target="_blank">Spanish Business Cycle Dating Committee (AEE)</a> for Spain. Since Italy does not have a business cycle dating committee, the Euro Area CEPR dates are used. These committees identify periods of "significant decline in economic activity that is spread across the economy and lasts more than a few months". These official recession periods are represented on our charts as shaded vertical bands.</div>
+                        <div class="faq-simple-answer">A: Official recession dates are determined by national business cycle dating committees: the <a href="https://www.nber.org/research/business-cycle-dating" target="_blank">NBER (National Bureau of Economic Research)</a> for the US, and the <a href="https://eabcn.org/dbc/home" target="_blank">CEPR (Centre for Economic Policy Research)</a> for the euro area. These committees identify periods of "significant decline in economic activity that is spread across the economy and lasts more than a few months". These official recession dates are represented on the dashboard as shaded vertical bands.</div>
                     </div>
 
                     <div class="faq-simple-item">
                         <div class="faq-simple-question">Q: What is the current modeling strategy?</div>
-                        <div class="faq-simple-answer">A: The recession risk nowcast uses a Bayesian logit model that combines one macroeconomic indicator and one financial indicator for each country or region. For the US, the model uses the ISM PMI Manufacturing (macroeconomic) and the Composite Indicator of Systemic Stress or CISS (financial). For European countries and the Euro Area, it uses the Economic Sentiment Indicator or ESI (macroeconomic) paired with the CISS (financial). The model estimates the probability that the economy is currently in recession by projecting official recession dates onto these two predictors. The Bayesian framework naturally incorporates parameter uncertainty, providing not just point estimates but also confidence intervals around the recession probability.</div>
+                        <div class="faq-simple-answer">A: The recession risk nowcast uses a Bayesian logit model that combines one macroeconomic indicator and one financial indicator for each country or region. For the US, the model uses the ISM PMI Manufacturing (macroeconomic) and the Composite Indicator of Systemic Stress or CISS (financial). For the euro area, it uses the Economic Sentiment Indicator or ESI (macroeconomic) paired with the CISS (financial). The model estimates the probability that the economy is currently in recession by projecting official recession dates onto these two predictors. The Bayesian framework naturally incorporates parameter uncertainty, providing not just point estimates but also confidence intervals around the recession probability.</div>
                     </div>
 
                     <div class="faq-simple-item">
                         <div class="faq-simple-question">Q: What is the estimation sample?</div>
-                        <div class="faq-simple-answer">A: The recession risk estimates use data starting from different periods for each region/country: 1980:m1 for the US, 1985:m1 for the Euro Area and Germany, 1985:m2 for France, 1991:m7 for Spain, and 1986:m1 for Italy. The "latest" estimates run through the latest available month. The "real-time" estimates, instead, are produced with a pseudo out-of-sample expanding window approach, to highlight the model's stability over time and its accuracy in real-time conditions. Importantly, a 24-month estimation delay is applied in both cases to account for the inherent uncertainty in classifying periods as recessions or expansions in real-time, since official recession announcements typically come with significant delays.</div>
+                        <div class="faq-simple-answer">A: The recession risk estimates use data starting from different periods for each region/country: 1980:m1 for the US, and 1985:m1 for the euro area. The "latest" estimates run through the latest available month. The "real-time" estimates, instead, are produced with a pseudo out-of-sample expanding window approach, to highlight the model's stability over time and its accuracy in real-time conditions. Importantly, a 24-month estimation delay is applied in both cases to account for the inherent uncertainty in classifying periods as recessions or expansions in real-time, since official recession announcements typically come with significant delays.</div>
                     </div>
 
                     <div class="faq-simple-item">
@@ -178,11 +178,11 @@
 
                     <div class="faq-simple-item">
                         <div class="faq-simple-question">Q: Are these estimates revised, and how reliable are they in real-time?</div>
-                        <div class="faq-simple-answer">A: The estimates are subject to minimal revisions because the underlying data sources are timely and stable. The CISS uses financial market prices (which are not revised), and the PMI/ESI surveys have only minor seasonal adjustments. Tests using real-time data vintages are available in <a href="https://doi.org/10.4337/9781035310050.00011" target="_blank">Furno and Giannone (2024)</a> and confirm high stability over time. The correlation between initial estimates and final estimates is 0.99 for the US and 0.98 for the Euro Area, confirming their reliability for real-time decision making.
+                        <div class="faq-simple-answer">A: The estimates are subject to minimal revisions because the underlying data sources are timely and stable. The CISS uses financial market prices (which are not revised), and the PMI/ESI surveys have only minor seasonal adjustments. Tests using real-time data vintages are available in <a href="https://doi.org/10.4337/9781035310050.00011" target="_blank">Furno and Giannone (2024)</a> and confirm high stability over time. The correlation between initial estimates and final estimates is 0.99 for the US and 0.98 for the euro area, confirming their reliability for real-time decision making.
                         
                         <div class="faq-figure">
                             <img src="./Figure2_vintages.png" alt="Recession Risk Stability across Vintages" class="faq-image">
-                            <div class="faq-caption">The chart above highlights the stability of the recession risk estimates across vintages of the Economic Sentiment Indicator (ESI) for the Euro Area.</div>
+                            <div class="faq-caption">The chart above highlights the stability of the recession risk estimates across vintages of the Economic Sentiment Indicator (ESI) for the euro area.</div>
                         </div>                        
                         
                         </div>
@@ -205,9 +205,7 @@
                     <div class="faq-simple-item">
                         <div class="faq-simple-question">Q: How should I cite this work?</div>
                         <div class="faq-simple-answer">
-                            A: Furno, F., & Giannone, D. (2024). Nowcasting recession risk. <em>Handbook of Research Methods and Applications in Macroeconomic Forecasting</em>, 156-186.<br><br>
-
-                            The link to the handbook chapter is <a href="https://doi.org/10.4337/9781035310050.00011" target="_blank">here</a>.
+                            A: Furno, F., & Giannone, D. (2024). Nowcasting recession risk. <em>Handbook of Research Methods and Applications in Macroeconomic Forecasting</em>, 156-186. Link <a href="https://doi.org/10.4337/9781035310050.00011" target="_blank">here</a>.
                         </div>
                     </div>
 
