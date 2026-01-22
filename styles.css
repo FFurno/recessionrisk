@@ -73,13 +73,13 @@ body {
 }
 
 .header-update-line {
-    font-size: clamp(0.7rem, 1vh, 0.85rem);
+    font-size: 0.8rem;
     color: #6c757d;
     margin-bottom: 0.3vh;
 }
 
 .header-stats-line {
-    font-size: clamp(0.75rem, 1.1vh, 0.9rem);
+    font-size: 0.85rem;
     color: #6c757d;
     font-weight: normal;
     margin-bottom: 0.8vh;
@@ -366,7 +366,7 @@ body {
 .chart-container {
     position: relative;
     width: 100%;
-    height: clamp(280px, 42vh, 425px);
+    height: clamp(280px, 45vh, 425px);
     margin: 1.2vh 0 0 0;
     background: white;
     border-radius: 15px 15px 0 0;
@@ -530,10 +530,10 @@ body {
 
 .range-display {
     text-align: center;
-    margin-top: 2vh;
+    margin-top: 4vh;
     font-weight: 600;
     color: #555;
-    font-size: clamp(0.8rem, 1.1vh, 0.95rem);
+    font-size: 0.95rem;
 }
 
 .range-display span {
