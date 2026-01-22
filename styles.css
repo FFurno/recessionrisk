@@ -367,7 +367,7 @@ body {
     position: relative;
     width: 100%;
     height: 425px;
-    margin: 15px 0;
+    margin: 15px 0 0 0;
     background: white;
     border-radius: 15px;
     padding: 18px;
@@ -450,9 +450,9 @@ body {
    ========================================================================== */
 .time-range-container {
     background: linear-gradient(135deg, #f1f3f4 0%, #e8eaed 100%);
-    padding: 25px;
+    padding: 8px 25px;
     border-radius: 15px;
-    margin: 20px 0;
+    margin: 0 0 20px 0;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
 }
 
@@ -468,7 +468,7 @@ body {
 
 .range-slider-container {
     position: relative;
-    padding: 15px 0;
+    padding: 5px 0;
 }
 
 .range-slider {
@@ -531,7 +531,7 @@ body {
 
 .range-display {
     text-align: center;
-    margin-top: 35px;
+    margin-top: 22px;
     font-weight: 600;
     color: #555;
     font-size: 0.95rem;
