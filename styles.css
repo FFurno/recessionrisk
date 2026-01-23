@@ -806,6 +806,12 @@ body {
     color: #495057;
 }
 
+.footer-copyright a {
+    color: #0072bd;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
 .footer-contact {
     font-size: 0.8rem;
     color: #6c757d;
@@ -821,6 +827,8 @@ body {
     color: #005a96;
     text-decoration: underline;
 }
+
+
 
 
 /* ==========================================================================
