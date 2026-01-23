@@ -545,8 +545,6 @@ class RecessionRiskVisualizer {
 
     downloadCSV() {
         if (this.selectedCountries.length === 1) {
-            
-            // Single country - download that country's data based on estimation mode
             const country = this.selectedCountries[0];
             let csvData, filename, countryLabel;
             
@@ -562,6 +560,10 @@ class RecessionRiskVisualizer {
                     csvData = this.countryData[country].csvText;
                     filename = `recession_risk_${countryLabel.replace(/\s+/g, '_')}_latest.csv`;
                 }
+            } else if (this.estimationMode === 'both') {
+                // Create combined CSV with both latest and real-time p50
+                csvData = this.generateBothEstimatesCSV(country);
+                filename = `recession_risk_${countryLabel.replace(/\s+/g, '_')}_both.csv`;
             } else {
                 // Download latest estimates
                 csvData = this.countryData[country].csvText;
@@ -581,7 +583,7 @@ class RecessionRiskVisualizer {
                 document.body.removeChild(link);
             }
         } else {
-            // Multiple countries - create a combined CSV based on estimation mode
+            // Multiple countries - existing code remains the same
             const combinedCSV = this.generateCombinedCSV();
             const modeLabel = this.estimationMode === 'realtime' ? '_realtime' : '_latest';
             const countryCodes = this.selectedCountries.join('_');
@@ -625,6 +627,44 @@ class RecessionRiskVisualizer {
             csv += '\n';
         });
 
+        return csv;
+    }
+
+    generateBothEstimatesCSV(country) {
+        // Create a CSV with both latest and real-time p50 estimates
+        const latestData = this.countryData[country]?.data || [];
+        const oosData = this.countryDataOOS[country]?.data || [];
+        
+        if (latestData.length === 0 && oosData.length === 0) {
+            return 'Time,RecessionRisk_Latest_p50,RecessionRisk_RealTime_p50,Recession\n';
+        }
+        
+        // Get all unique time points from both datasets
+        const allTimePoints = new Set();
+        latestData.forEach(row => allTimePoints.add(row.Time));
+        oosData.forEach(row => allTimePoints.add(row.Time));
+        
+        // Sort time points chronologically
+        const sortedTimePoints = Array.from(allTimePoints).sort((a, b) => {
+            const dateA = this.parseTimeString(a);
+            const dateB = this.parseTimeString(b);
+            return dateA - dateB;
+        });
+        
+        // Build CSV
+        let csv = 'Time,RecessionRisk_Latest_p50,RecessionRisk_RealTime_p50,Recession\n';
+        
+        sortedTimePoints.forEach(timePoint => {
+            const latestRow = latestData.find(row => row.Time === timePoint);
+            const oosRow = oosData.find(row => row.Time === timePoint);
+            
+            const latestValue = latestRow ? latestRow.RecessionRisk_p50.toFixed(4) : '';
+            const oosValue = oosRow ? oosRow.RecessionRisk_p50.toFixed(4) : '';
+            const recessionValue = latestRow ? latestRow.Recession : (oosRow ? oosRow.Recession : '');
+            
+            csv += `${timePoint},${latestValue},${oosValue},${recessionValue}\n`;
+        });
+        
         return csv;
     }
 
