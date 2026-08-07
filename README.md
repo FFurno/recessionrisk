@@ -54,8 +54,8 @@ For full details, see the **FAQ tab** on the site or the working paper.
 index.html       Page markup and the FAQ content
 app.js           Dashboard logic (charts, controls, data loading)
 styles.css       Styling
-data/            Recession-risk time series (CSV) and FRED-formatted output (JSON)
-scatter_plots/   Macro-financial conditions figures (SVG)
+data/            Monthly inputs: recession-risk time series (CSV), FRED-formatted
+                 output (JSON), and macro-financial conditions figures (SVG)
 FAQ/             Figures used in the FAQ section
 CNAME            Custom domain for GitHub Pages
 ```
